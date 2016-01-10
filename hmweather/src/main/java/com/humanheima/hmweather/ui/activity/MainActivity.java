@@ -9,18 +9,22 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
 import com.humanheima.hmweather.base.BaseFragment;
+import com.humanheima.hmweather.bean.CityInfo;
+import com.humanheima.hmweather.bean.CityInfoList;
 import com.humanheima.hmweather.bean.WeatherBean;
 import com.humanheima.hmweather.network.NetWork;
 import com.humanheima.hmweather.ui.adapter.ViewPagerAdapter;
 import com.humanheima.hmweather.ui.fragment.MultiCityManageFragment;
 import com.humanheima.hmweather.ui.fragment.WeatherFragment;
-import com.humanheima.hmweather.utils.LogUtil;
+
+import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +32,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
@@ -53,6 +56,7 @@ public class MainActivity extends BaseActivity
     private List<BaseFragment> fragmentList;
     private List<String> titleList;
     private ViewPagerAdapter viewPagerAdapter;
+    private List<CityInfo> cityInfo;
 
     @Override
     protected int bindLayout() {
@@ -157,7 +161,7 @@ public class MainActivity extends BaseActivity
     //点击悬浮按钮
     @OnClick(R.id.fab)
     public void onFabClick() {
-        NetWork.getApi().getWeatherByPost("CN101020100", "fcaa02b41e9048e7aa5854b1e279e1c6")
+       /* NetWork.getApi().getWeatherByPost("CN101020100", "fcaa02b41e9048e7aa5854b1e279e1c6")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<WeatherBean>() {
@@ -175,6 +179,28 @@ public class MainActivity extends BaseActivity
                     public void onNext(WeatherBean weatherBean) {
                         heWeather = weatherBean.getWeatherList().get(0);
                         LogUtil.e("getWeather", "" + heWeather.getStatus() + "," + heWeather.getBasic().getCity());
+                    }
+                });*/
+        NetWork.getApi().getCityInfoList("allchina", "fcaa02b41e9048e7aa5854b1e279e1c6")
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(new Subscriber<CityInfoList>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.e("tag", "onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Log.e("tag", "onError" + throwable.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(CityInfoList cityInfoList) {
+                        cityInfo = cityInfoList.getCityInfo();
+                        if (cityInfo.size() > 0) {
+                            DataSupport.saveAll(cityInfo);
+                        }
                     }
                 });
     }

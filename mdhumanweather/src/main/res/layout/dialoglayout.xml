@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dp200"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center">
+
+   <TextView
+       android:id="@+id/tvLocateCity"
+       android:layout_marginTop="@dimen/dp15"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:textSize="@dimen/sp25"
+       android:textColor="@color/teal"
+       android:text="@string/loccity"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp2"
+        android:layout_marginTop="@dimen/dp10"
+        android:background="@color/teal"/>
+
+    <TextView
+        android:id="@+id/tvCityNm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp10"
+        android:textColor="@color/teal"
+        android:textSize="@dimen/sp20"
+        android:layout_marginBottom="@dimen/dp10"
+        android:text="@string/app_name"/>
+
+</LinearLayout>

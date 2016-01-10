@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
+	<!-- android:background="#27A5F9" -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="70dp" >
+        
+        <TextView android:id="@+id/tv_itemcitynm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+             android:textColor="@color/text_color" 
+            android:text="泰安"/>
+
+        <TextView
+            android:id="@+id/tv_itemdays"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:text="13-13"
+             android:textColor="@color/text_color" />
+
+        <TextView
+            android:id="@+id/tv_itemweek"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:text="星期八"
+            android:textColor="@color/text_color"  />
+
+        <TextView
+            android:id="@+id/tv_itemtemperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:text="20℃/6℃"
+             android:textColor="@color/text_color"  />
+
+         <TextView
+            android:id="@+id/tv_itemweather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="30dp"
+            android:text="多云转晴"
+             android:textColor="@color/text_color" />
+
+        <!--  <ImageView
+            android:id="@+id/img_itemweather_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_launcher"
+            android:layout_marginLeft="10dp" />
+            -->
+    </LinearLayout>
+    <!--  <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_itemweather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="30dp"
+            android:text="多云转晴"
+             android:textColor="@color/text_color" />
+        <TextView
+            android:id="@+id/tv_itemwind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:text="多云转晴"
+             android:textColor="@color/text_color" />
+        <TextView
+            android:id="@+id/tv_itemwinp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:text="多云转晴"
+            android:textColor="@color/text_color" />
+        </LinearLayout>-->
+
+</LinearLayout>

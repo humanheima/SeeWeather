@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/llCity"
+    android:orientation="vertical">
+
+
+    <view.ClearEditText
+        android:id="@+id/filter_edit"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dip"
+        android:background="@drawable/edit_selector"
+        android:drawableLeft="@drawable/search_icon"
+        android:gravity="center"
+        android:hint="@string/findcity"
+        android:singleLine="true"
+        android:textSize="@dimen/sp20" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp10"
+        android:orientation="horizontal"
+        android:gravity="center_vertical" >
+
+       <!-- <TextView
+            android:id="@+id/tvLocCity"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/sp20"
+            android:layout_marginRight="@dimen/dp10"
+            android:gravity="center"
+            android:background="@color/white"
+            android:hint="@string/loccity"
+             />-->
+        <Button 
+            android:id="@+id/btnLocCity"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp30"
+            android:text="@string/loccity"
+            android:layout_gravity="right"
+            android:background="@drawable/bg_myedittext"
+            android:layout_marginRight="@dimen/dp10"
+            
+           />
+    </LinearLayout>
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="@dimen/dp10" >
+
+        <ListView
+            android:id="@+id/lv_city"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:divider="@null" />
+
+     <!--   <TextView
+            android:id="@+id/tv_alphaBackGround"
+            android:layout_width="80.0dip"
+            android:layout_height="80.0dip"
+            android:layout_gravity="center"
+            android:background="@drawable/show_head_toast_bg"
+            android:gravity="center"
+            android:textColor="#ffffffff"
+            android:textSize="30.0dip"
+            android:visibility="invisible" />-->
+
+        <view.SideBar
+            android:id="@+id/sidrbar"
+            android:layout_width="30.0dip"
+            android:layout_height="fill_parent"
+            android:layout_gravity="right|center" />
+    </FrameLayout>
+
+</LinearLayout>

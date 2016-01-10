@@ -20,8 +20,8 @@ public class NetWork {
         if (api == null) {
             okHttpClient = new OkHttpClient.Builder()
                     .retryOnConnectionFailure(true)
-                    .readTimeout(20, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .readTimeout(200, TimeUnit.SECONDS)
+                    .writeTimeout(300, TimeUnit.SECONDS)
                     .connectTimeout(30, TimeUnit.SECONDS)
                     .build();
 

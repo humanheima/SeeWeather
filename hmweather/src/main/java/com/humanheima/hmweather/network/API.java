@@ -1,5 +1,6 @@
 package com.humanheima.hmweather.network;
 
+import com.humanheima.hmweather.bean.CityInfoList;
 import com.humanheima.hmweather.bean.WeatherBean;
 
 import java.util.Map;
@@ -20,6 +21,10 @@ public interface API {
     //Observable<WeatherBean> getWeather();
     @GET("weather")
     Observable<WeatherBean> getWeather(@Query("cityid") String cityId, @Query("key") String key);
+
+    @GET("citylist")
+    Observable<CityInfoList> getCityInfoList(@Query("search") String type, @Query("key") String key);
+    //https://api.heweather.com/x3/citylist?search=allchina&key=fcaa02b41e9048e7aa5854b1e279e1c6
 
     @GET("weather")
     Observable<WeatherBean> getWeather(@QueryMap() Map<String, String> map);
