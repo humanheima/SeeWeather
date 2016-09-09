@@ -14,10 +14,26 @@ import android.view.MenuItem;
 
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
+import com.humanheima.hmweather.base.BaseFragment;
+import com.humanheima.hmweather.bean.WeatherBean;
+import com.humanheima.hmweather.network.NetWork;
+import com.humanheima.hmweather.ui.adapter.ViewPagerAdapter;
+import com.humanheima.hmweather.ui.fragment.MultiCityManageFragment;
+import com.humanheima.hmweather.ui.fragment.WeatherFragment;
+import com.humanheima.hmweather.utils.LogUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
+/**
+ * Created by dmw on 2016/9/9.
+ */
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -34,6 +50,10 @@ public class MainActivity extends BaseActivity
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
 
+    private List<BaseFragment> fragmentList;
+    private List<String> titleList;
+    private ViewPagerAdapter viewPagerAdapter;
+
     @Override
     protected int bindLayout() {
         return R.layout.activity_main;
@@ -49,6 +69,21 @@ public class MainActivity extends BaseActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        initViewPager();
+    }
+
+    private void initViewPager() {
+        fragmentList = new ArrayList<>();
+        titleList = new ArrayList<>();
+        fragmentList.add(new WeatherFragment());
+        fragmentList.add(new MultiCityManageFragment());
+        titleList.add("城市名");
+        titleList.add("多城市管理");
+
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), fragmentList, titleList);
+        viewPager.setAdapter(viewPagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
     }
 
     @Override
@@ -112,13 +147,35 @@ public class MainActivity extends BaseActivity
 
         }*/
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+
+        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    WeatherBean.HeWeather heWeather;
 
     //点击悬浮按钮
     @OnClick(R.id.fab)
     public void onFabClick() {
+        NetWork.getApi().getWeatherByPost("CN101020100", "fcaa02b41e9048e7aa5854b1e279e1c6")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<WeatherBean>() {
+                    @Override
+                    public void onCompleted() {
+                        LogUtil.e("getWeather", "onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtil.e("getWeather", "onError" + e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(WeatherBean weatherBean) {
+                        heWeather = weatherBean.getWeatherList().get(0);
+                        LogUtil.e("getWeather", "" + heWeather.getStatus() + "," + heWeather.getBasic().getCity());
+                    }
+                });
     }
 }
