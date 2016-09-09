@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#303F9F</color>
+
+    <array name="in_colors_light">
+        <item>#4BFF4081</item>
+        <item>#33FF4081</item>
+        <item>#19FF4081</item>
+    </array>
+
+    <color name="background">#303F9F</color>
+
+    <color name="colorPrimaryHalf">#90303F9F</color>
+    <color name="colorControlNormal">#3f50bf</color>
+
+    <!-- 文字颜色-->
+    <!--普通-->
+    <color name="general_black">#dd000000</color>
+    <color name="general_white">#ffffffff</color>
+    <!-- 减淡-->
+    <color name="fades_black">#89000000</color>
+    <color name="fades_white">#b2ffffff</color>
+    <!-- 禁用/警告-->
+    <color name="disabled_black">#42000000</color>
+    <color name="disabled_white">#4cffffff</color>
+    <!-- 分割线-->
+    <color name="divide_black">#1e000000</color>
+    <color name="divide_white">#1effffff</color>
+
+    <color name="weather_icon_color">#ffffffff</color>
+</resources>
