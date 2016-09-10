@@ -9,20 +9,20 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.humanheima.hmweather.C;
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
 import com.humanheima.hmweather.base.BaseFragment;
 import com.humanheima.hmweather.bean.CityInfo;
-import com.humanheima.hmweather.bean.CityInfoList;
 import com.humanheima.hmweather.bean.WeatherBean;
 import com.humanheima.hmweather.network.NetWork;
 import com.humanheima.hmweather.ui.adapter.ViewPagerAdapter;
 import com.humanheima.hmweather.ui.fragment.MultiCityManageFragment;
 import com.humanheima.hmweather.ui.fragment.WeatherFragment;
+import com.humanheima.hmweather.utils.LogUtil;
 
 import org.litepal.crud.DataSupport;
 
@@ -32,6 +32,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
@@ -181,7 +182,7 @@ public class MainActivity extends BaseActivity
                         LogUtil.e("getWeather", "" + heWeather.getStatus() + "," + heWeather.getBasic().getCity());
                     }
                 });*/
-        NetWork.getApi().getCityInfoList("allchina", "fcaa02b41e9048e7aa5854b1e279e1c6")
+       /* NetWork.getApi().getCityInfoList("allchina", "fcaa02b41e9048e7aa5854b1e279e1c6")
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(new Subscriber<CityInfoList>() {
@@ -201,6 +202,28 @@ public class MainActivity extends BaseActivity
                         if (cityInfo.size() > 0) {
                             DataSupport.saveAll(cityInfo);
                         }
+                    }
+                });*/
+
+        CityInfo cityInfo = DataSupport.where("city=?", "闵行").findFirst(CityInfo.class);
+        NetWork.getApi().getWeatherByPost(cityInfo.getWeatherId(), C.KEY)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<WeatherBean>() {
+                    @Override
+                    public void onCompleted() {
+                        LogUtil.e("getWeather", "onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtil.e("getWeather", "onError" + e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(WeatherBean weatherBean) {
+                        heWeather = weatherBean.getWeatherList().get(0);
+                        LogUtil.e("getWeather", "" + heWeather.getStatus() + "," + heWeather.getBasic().getCity());
                     }
                 });
     }
