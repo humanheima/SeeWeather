@@ -37,5 +37,10 @@ dependencies {
     //retrofit
     compile "com.squareup.retrofit2:converter-gson:2.1.0"
     compile "com.squareup.retrofit2:adapter-rxjava:2.1.0"
+
+    //litepal 数据库
     compile 'org.litepal.android:core:1.3.2'
+
+    //拼音汉字转化
+    compile 'com.github.promeg:tinypinyin:1.0.0'
 }

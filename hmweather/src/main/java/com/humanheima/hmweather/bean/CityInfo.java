@@ -5,10 +5,30 @@ import com.google.gson.annotations.SerializedName;
 import org.litepal.crud.DataSupport;
 
 public class CityInfo extends DataSupport {
+
+    private long id;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     private String city;
     private String cnty;
     @SerializedName("id")
     private String weatherId;
+    private String cityPinyin;//城市的拼音名字，比如说上海对应的拼音名字就是SHANGHAI
+
+    public String getCityPinyin() {
+        return cityPinyin;
+    }
+
+    public void setCityPinyin(String cityPinyin) {
+        this.cityPinyin = cityPinyin;
+    }
 
     public String getWeatherId() {
         return weatherId;

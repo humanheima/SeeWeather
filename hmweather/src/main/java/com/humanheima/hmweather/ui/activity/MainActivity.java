@@ -1,6 +1,8 @@
 package com.humanheima.hmweather.ui.activity;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -12,13 +14,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.humanheima.hmweather.C;
+import com.github.promeg.pinyinhelper.Pinyin;
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
 import com.humanheima.hmweather.base.BaseFragment;
 import com.humanheima.hmweather.bean.CityInfo;
 import com.humanheima.hmweather.bean.WeatherBean;
-import com.humanheima.hmweather.network.NetWork;
 import com.humanheima.hmweather.ui.adapter.ViewPagerAdapter;
 import com.humanheima.hmweather.ui.fragment.MultiCityManageFragment;
 import com.humanheima.hmweather.ui.fragment.WeatherFragment;
@@ -31,9 +32,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by dmw on 2016/9/9.
@@ -57,7 +55,8 @@ public class MainActivity extends BaseActivity
     private List<BaseFragment> fragmentList;
     private List<String> titleList;
     private ViewPagerAdapter viewPagerAdapter;
-    private List<CityInfo> cityInfo;
+    public List<CityInfo> cityInfos = new ArrayList<>();
+    public CityInfo cityInfo;
 
     @Override
     protected int bindLayout() {
@@ -205,8 +204,55 @@ public class MainActivity extends BaseActivity
                     }
                 });*/
 
-        CityInfo cityInfo = DataSupport.where("city=?", "闵行").findFirst(CityInfo.class);
-        NetWork.getApi().getWeatherByPost(cityInfo.getWeatherId(), C.KEY)
+        final List<CityInfo> list = DataSupport.where("id > ?", "0").find(CityInfo.class);
+      /*  if (list.size() > 0) {
+            ContentValues values = new ContentValues();
+            values.put("citypinyin", "");
+            int i = DataSupport.updateAll(CityInfo.class, values, "id>?", "0");
+            if (i > 0) {
+                LogUtil.e("tag", "updata success");
+            }
+        }*/
+        if (list.size() > 0) {
+
+            new AsyncTask<Void, Void, Boolean>() {
+                @Override
+                protected Boolean doInBackground(Void... voids) {
+                    long id = -1;
+                    for (int i = 0; i < list.size(); i++) {
+                        cityInfo = list.get(i);
+                        String city = cityInfo.getCity();
+                        id = cityInfo.getId();
+                        char[] chars = city.toCharArray();
+                        String cityPinyin="";
+                        String s = null;
+                        for (int j = 0; j < chars.length; j++) {
+                            s = Pinyin.toPinyin(chars[j]);
+                            cityPinyin += s;
+                        }
+                        ContentValues values = new ContentValues();
+                        values.put("citypinyin", cityPinyin);
+                        DataSupport.update(CityInfo.class, values, id);
+                    }
+                    if (id > 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
+                @Override
+                protected void onPostExecute(Boolean aBoolean) {
+                    if (aBoolean) {
+                        LogUtil.e("save", "successful");
+                    } else {
+                        LogUtil.e("save", "failed");
+                    }
+                }
+            }.execute();
+        }
+
+      /*  NetWork.getApi().getWeatherByPost(cityInfo.getWeatherId(), C.KEY)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<WeatherBean>() {
@@ -225,6 +271,6 @@ public class MainActivity extends BaseActivity
                         heWeather = weatherBean.getWeatherList().get(0);
                         LogUtil.e("getWeather", "" + heWeather.getStatus() + "," + heWeather.getBasic().getCity());
                     }
-                });
+                });*/
     }
 }
