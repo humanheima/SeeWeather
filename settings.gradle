@@ -1,1 +1,1 @@
-include ':app', ':hmweather', ':litepaldemo', ':mdhumanweather', ':recyclerViewDemo'
+include ':app', ':hmweather', ':litepaldemo', ':mdhumanweather'

@@ -55,20 +55,13 @@ public class CityRVAdapter extends LoadMoreAdapter {
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+        super.onBindViewHolder(holder, position);
         if (holder instanceof CityRVHolder && position < cityInfoList.size()) {
             cityInfo = cityInfoList.get(position);
             city = cityInfo.getCity();
             cityPinyin = cityInfo.getCityPinyin();
             weatherId = cityInfo.getWeatherId();
             ((CityRVHolder) holder).textItemCity.setText(city);
-            if (itemClickListener != null) {
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        itemClickListener.onItemClick(holder.itemView, position);
-                    }
-                });
-            }
         }
 
     }
@@ -81,8 +74,6 @@ public class CityRVAdapter extends LoadMoreAdapter {
             return cityInfoList.size();
         }
     }
-
-
 
     static class CityRVHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.text_item_city)

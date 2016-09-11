@@ -3,11 +3,16 @@ package com.humanheima.hmweather.ui.activity;
 import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
@@ -89,6 +94,40 @@ public class ChooseCityActivity extends BaseActivity {
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //这句话的意思是把mymenu加载到menu中
+        getMenuInflater().inflate(R.menu.city, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String queryCitynm) {
+                // 当输入框里面的值为空，更新为原来的列表，否则为过滤数据列表
+                //首先从当前的List中找，找不到就从数据库里面查找，再找不到，就没办法了
+                // String citynm = PinYn4jUtil.getPinYin(queryCitynm).toLowerCase();
+                // filterData(citynm);
+                return true;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Toast.makeText(this, "you click action_settings", Toast.LENGTH_SHORT).show();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     /**
      * 加载城市列表，每次加载100条
      */
@@ -98,13 +137,13 @@ public class ChooseCityActivity extends BaseActivity {
         protected Boolean doInBackground(Integer... params) {
             tempCityInfoList.clear();
             String start = String.valueOf(params[0]);
-            String end = String.valueOf(params[0] + 10);
+            String end = String.valueOf(params[0] + 100);
 
             tempCityInfoList = DataSupport.where("id > ?", start).where("id<=?", end).find(CityInfo.class);
             if (tempCityInfoList.size() > 0) {
                 LogUtil.e("tag", tempCityInfoList.size() + "");
                 cityInfoList.addAll(tempCityInfoList);
-                SIZE += 10;//每次查询成功，就把SIZE加100；
+                SIZE += 100;//每次查询成功，就把SIZE加100；
                 return true;
             } else {
                 LogUtil.e("tag", "doInBackground 查询失败");
