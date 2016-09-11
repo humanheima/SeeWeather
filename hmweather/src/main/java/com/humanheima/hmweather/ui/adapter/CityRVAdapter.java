@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.bean.CityInfo;
+import com.humanheima.hmweather.listener.OnItemClickListener;
+import com.humanheima.hmweather.listener.OnLoadMoreListener;
 
 import java.util.List;
 
@@ -20,8 +22,7 @@ import butterknife.ButterKnife;
  * Created by dmw on 2016/9/11.
  * 城市选择界面的RecyckerView 适配器
  */
-public class CityRVAdapter extends RecyclerView.Adapter<CityRVAdapter.CityRVHolder> {
-
+public class CityRVAdapter extends LoadMoreAdapter {
     private Context context;
     private List<CityInfo> cityInfoList;
     private OnItemClickListener itemClickListener;
@@ -35,47 +36,53 @@ public class CityRVAdapter extends RecyclerView.Adapter<CityRVAdapter.CityRVHold
     private String cityPinyin;
     private CityInfo cityInfo;
 
-    public void setItemClickListener(OnItemClickListener itemClickListener) {
-        this.itemClickListener = itemClickListener;
-    }
 
-    public CityRVAdapter(Context context, List<CityInfo> cityInfoList) {
-        this.context = context;
+    public CityRVAdapter(RecyclerView recyclerView, List<CityInfo> cityInfoList, OnLoadMoreListener onloadMoreListener) {
+        super(recyclerView, onloadMoreListener);
         this.cityInfoList = cityInfoList;
-
+        context = recyclerView.getContext();
     }
 
     @Override
-    public CityRVHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_city, parent, false);
-        return new CityRVHolder(itemView);
-    }
-
-    @Override
-    public void onBindViewHolder(final CityRVHolder holder, final int position) {
-        cityInfo = cityInfoList.get(position);
-        city = cityInfo.getCity();
-        cityPinyin = cityInfo.getCityPinyin();
-        weatherId = cityInfo.getWeatherId();
-        holder.textItemCity.setText(city);
-        if (itemClickListener != null) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    itemClickListener.onItemClick(holder.itemView, position);
-                }
-            });
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == LOAD_MORE_ITEM) {
+            return super.onCreateViewHolder(parent, viewType);
+        } else {
+            View itemView = LayoutInflater.from(context).inflate(R.layout.item_city, parent, false);
+            return new CityRVHolder(itemView);
         }
     }
 
     @Override
-    public int getItemCount() {
-        return cityInfoList.size();
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+        if (holder instanceof CityRVHolder && position < cityInfoList.size()) {
+            cityInfo = cityInfoList.get(position);
+            city = cityInfo.getCity();
+            cityPinyin = cityInfo.getCityPinyin();
+            weatherId = cityInfo.getWeatherId();
+            ((CityRVHolder) holder).textItemCity.setText(city);
+            if (itemClickListener != null) {
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        itemClickListener.onItemClick(holder.itemView, position);
+                    }
+                });
+            }
+        }
+
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(View view, int position);
+    @Override
+    int getDataSize() {
+        if (cityInfoList == null) {
+            return 0;
+        } else {
+            return cityInfoList.size();
+        }
     }
+
+
 
     static class CityRVHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.text_item_city)

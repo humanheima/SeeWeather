@@ -12,6 +12,8 @@ import android.view.View;
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
 import com.humanheima.hmweather.bean.CityInfo;
+import com.humanheima.hmweather.listener.OnItemClickListener;
+import com.humanheima.hmweather.listener.OnLoadMoreListener;
 import com.humanheima.hmweather.ui.adapter.CityRVAdapter;
 import com.humanheima.hmweather.utils.LogUtil;
 import com.humanheima.hmweather.utils.T;
@@ -33,6 +35,9 @@ public class ChooseCityActivity extends BaseActivity {
     FloatingActionButton fab;
     private CityRVAdapter cityRVAdapter;
     private List<CityInfo> cityInfoList;
+    private List<CityInfo> tempCityInfoList;
+    private static int SIZE = 0;
+    AsynLoacCity asynTask;
 
     @Override
     protected int bindLayout() {
@@ -43,42 +48,35 @@ public class ChooseCityActivity extends BaseActivity {
     protected void initData() {
         setSupportActionBar(toolbar);
         cityInfoList = new ArrayList<>();
+        tempCityInfoList = new ArrayList<>();
         recyclerViewCity.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewCity.setHasFixedSize(true);
         recyclerViewCity.setItemAnimator(new DefaultItemAnimator());
-        cityRVAdapter = new CityRVAdapter(this, cityInfoList);
-        cityRVAdapter.setItemClickListener(new CityRVAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                T.showToast(ChooseCityActivity.this, cityRVAdapter.getWeatherId());
-            }
-        });
-        recyclerViewCity.setAdapter(cityRVAdapter);
-
-        searchCityFromDb();
+        new AsynLoacCity().execute(SIZE);
     }
 
-    private void searchCityFromDb() {
-        new AsyncTask<Void, Void, Boolean>() {
-            @Override
-            protected Boolean doInBackground(Void... voids) {
-                cityInfoList.addAll(DataSupport.where("id > ?", "0").find(CityInfo.class));
-                if (cityInfoList.size() > 0) {
-                    LogUtil.e("searchCityFromDb", "cityInfoList" + cityInfoList.size());
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+    private void setAdapter() {
+        if (cityRVAdapter == null) {
+            cityRVAdapter = new CityRVAdapter(recyclerViewCity, cityInfoList, new OnLoadMoreListener() {
+                @Override
+                public void onLoadMore() {
 
-            @Override
-            protected void onPostExecute(Boolean success) {
-                if (success) {
-                    cityRVAdapter.notifyDataSetChanged();
+                    //每次上拉加载更多之前设置setLoadAll(false)
+                    new AsynLoacCity().execute(SIZE);
                 }
-            }
-        }.execute();
+            });
+            cityRVAdapter.setOnItemClickListener(new OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    T.showToast(ChooseCityActivity.this, cityRVAdapter.getWeatherId());
+                }
+            });
+            recyclerViewCity.setAdapter(cityRVAdapter);
+        }
+        //更新适配器
+        cityRVAdapter.reset();
     }
+
 
     @Override
     protected void bindEvent() {
@@ -89,6 +87,36 @@ public class ChooseCityActivity extends BaseActivity {
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    /**
+     * 加载城市列表，每次加载100条
+     */
+    class AsynLoacCity extends AsyncTask<Integer, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Integer... params) {
+            tempCityInfoList.clear();
+            String start = String.valueOf(params[0]);
+            String end = String.valueOf(params[0] + 10);
+
+            tempCityInfoList = DataSupport.where("id > ?", start).where("id<=?", end).find(CityInfo.class);
+            if (tempCityInfoList.size() > 0) {
+                LogUtil.e("tag", tempCityInfoList.size() + "");
+                cityInfoList.addAll(tempCityInfoList);
+                SIZE += 10;//每次查询成功，就把SIZE加100；
+                return true;
+            } else {
+                LogUtil.e("tag", "doInBackground 查询失败");
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            setAdapter();
+
+        }
     }
 
 }
