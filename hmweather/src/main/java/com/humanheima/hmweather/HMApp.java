@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 
 import com.humanheima.hmweather.utils.LogUtil;
+import com.humanheima.hmweather.utils.SPUtil;
 
 import org.litepal.LitePalApplication;
 
@@ -33,7 +34,9 @@ public class HMApp extends Application {
         context = this;
         LitePalApplication.initialize(context);
         copyDataBase(DB_FILE);
+        initWeatherIcon();
     }
+
 
     public static Context getAppContext() {
         return context;
@@ -105,6 +108,25 @@ public class HMApp extends Application {
             }
 
         }
+    }
+
+    /**
+     * 初始化天气图标
+     */
+    private void initWeatherIcon() {
+        SPUtil.getInstance().putInt("未知", R.mipmap.none);
+        SPUtil.getInstance().putInt("晴", R.mipmap.type_one_sunny);
+        SPUtil.getInstance().putInt("阴", R.mipmap.type_one_cloudy);
+        SPUtil.getInstance().putInt("多云", R.mipmap.type_one_cloudy);
+        SPUtil.getInstance().putInt("少云", R.mipmap.type_one_cloudy);
+        SPUtil.getInstance().putInt("晴间多云", R.mipmap.type_one_cloudytosunny);
+        SPUtil.getInstance().putInt("小雨", R.mipmap.type_one_light_rain);
+        SPUtil.getInstance().putInt("中雨", R.mipmap.type_one_light_rain);
+        SPUtil.getInstance().putInt("大雨", R.mipmap.type_one_heavy_rain);
+        SPUtil.getInstance().putInt("阵雨", R.mipmap.type_one_thunderstorm);
+        SPUtil.getInstance().putInt("雷阵雨", R.mipmap.type_one_thunder_rain);
+        SPUtil.getInstance().putInt("霾", R.mipmap.type_one_fog);
+        SPUtil.getInstance().putInt("雾", R.mipmap.type_one_fog);
     }
 }
 

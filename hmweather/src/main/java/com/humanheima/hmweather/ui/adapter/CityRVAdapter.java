@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.bean.CityInfo;
-import com.humanheima.hmweather.listener.OnItemClickListener;
 import com.humanheima.hmweather.listener.OnLoadMoreListener;
 
 import java.util.List;
@@ -25,7 +24,6 @@ import butterknife.ButterKnife;
 public class CityRVAdapter extends LoadMoreAdapter {
     private Context context;
     private List<CityInfo> cityInfoList;
-    private OnItemClickListener itemClickListener;
     private String weatherId;
 
     public String getWeatherId() {
@@ -41,6 +39,16 @@ public class CityRVAdapter extends LoadMoreAdapter {
         super(recyclerView, onloadMoreListener);
         this.cityInfoList = cityInfoList;
         context = recyclerView.getContext();
+    }
+
+    public void updeteListView(List<CityInfo> cityInfos) {
+        this.cityInfoList = cityInfos;
+        this.notifyDataSetChanged();
+
+    }
+
+    public List<CityInfo> getCityInfoList() {
+        return cityInfoList;
     }
 
     @Override

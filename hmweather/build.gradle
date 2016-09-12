@@ -43,4 +43,7 @@ dependencies {
 
     //拼音汉字转化
     compile 'com.github.promeg:tinypinyin:1.0.0'
+
+    //加载图片
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }

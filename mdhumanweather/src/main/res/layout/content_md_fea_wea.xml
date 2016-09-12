@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/relativeLayout"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -12,4 +13,13 @@
     tools:context="com.example.humanweather.MdFeaWeaActivity"
     tools:showIn="@layout/activity_md_fea_wea">
 
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/srlFeatureWeather"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ListView
+            android:id="@+id/lv_featureWeatherInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></ListView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>

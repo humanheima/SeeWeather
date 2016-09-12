@@ -9,9 +9,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.humanheima.hmweather.R;
@@ -38,11 +40,12 @@ public class ChooseCityActivity extends BaseActivity {
     RecyclerView recyclerViewCity;
     @BindView(R.id.fab)
     FloatingActionButton fab;
+    @BindView(R.id.rl_loading)
+    RelativeLayout rlLoading;
     private CityRVAdapter cityRVAdapter;
     private List<CityInfo> cityInfoList;
     private List<CityInfo> tempCityInfoList;
     private static int SIZE = 0;
-    AsynLoacCity asynTask;
 
     @Override
     protected int bindLayout() {
@@ -52,8 +55,8 @@ public class ChooseCityActivity extends BaseActivity {
     @Override
     protected void initData() {
         setSupportActionBar(toolbar);
-        cityInfoList = new ArrayList<>();
         tempCityInfoList = new ArrayList<>();
+        cityInfoList = new ArrayList<>();
         recyclerViewCity.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewCity.setHasFixedSize(true);
         recyclerViewCity.setItemAnimator(new DefaultItemAnimator());
@@ -61,6 +64,7 @@ public class ChooseCityActivity extends BaseActivity {
     }
 
     private void setAdapter() {
+
         if (cityRVAdapter == null) {
             cityRVAdapter = new CityRVAdapter(recyclerViewCity, cityInfoList, new OnLoadMoreListener() {
                 @Override
@@ -73,7 +77,11 @@ public class ChooseCityActivity extends BaseActivity {
             cityRVAdapter.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
-                    T.showToast(ChooseCityActivity.this, cityRVAdapter.getWeatherId());
+                    if (cityRVAdapter.getItemCount() < 100) {
+                        T.showToast(ChooseCityActivity.this, tempCityInfoList.get(position).getWeatherId());
+                    } else {
+                        T.showToast(ChooseCityActivity.this, cityInfoList.get(position).getWeatherId());
+                    }
                 }
             });
             recyclerViewCity.setAdapter(cityRVAdapter);
@@ -96,7 +104,6 @@ public class ChooseCityActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //这句话的意思是把mymenu加载到menu中
         getMenuInflater().inflate(R.menu.city, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -107,15 +114,34 @@ public class ChooseCityActivity extends BaseActivity {
             }
 
             @Override
-            public boolean onQueryTextChange(String queryCitynm) {
+            public boolean onQueryTextChange(String query) {
                 // 当输入框里面的值为空，更新为原来的列表，否则为过滤数据列表
                 //首先从当前的List中找，找不到就从数据库里面查找，再找不到，就没办法了
                 // String citynm = PinYn4jUtil.getPinYin(queryCitynm).toLowerCase();
+                if (!TextUtils.isEmpty(query) && query.length() > 1) {
+                    searchCity(query);
+                } else {
+                    cityRVAdapter.updeteListView(cityInfoList);
+                }
+
                 // filterData(citynm);
                 return true;
             }
         });
         return super.onCreateOptionsMenu(menu);
+    }
+
+    //根据用户输入的汉字查询城市
+    private void searchCity(String cityName) {
+        tempCityInfoList.clear();
+        for (CityInfo city : cityInfoList) {
+            if (TextUtils.equals(cityName, city.getCity())) {
+                tempCityInfoList.add(city);
+            }
+        }
+        if (tempCityInfoList.size() > 0) {
+            cityRVAdapter.updeteListView(tempCityInfoList);
+        }
     }
 
     @Override
@@ -134,16 +160,15 @@ public class ChooseCityActivity extends BaseActivity {
     class AsynLoacCity extends AsyncTask<Integer, Void, Boolean> {
 
         @Override
-        protected Boolean doInBackground(Integer... params) {
-            tempCityInfoList.clear();
-            String start = String.valueOf(params[0]);
-            String end = String.valueOf(params[0] + 100);
+        protected void onPreExecute() {
+            //显示加载布局
+            rlLoading.setVisibility(View.VISIBLE);
+        }
 
-            tempCityInfoList = DataSupport.where("id > ?", start).where("id<=?", end).find(CityInfo.class);
-            if (tempCityInfoList.size() > 0) {
-                LogUtil.e("tag", tempCityInfoList.size() + "");
-                cityInfoList.addAll(tempCityInfoList);
-                SIZE += 100;//每次查询成功，就把SIZE加100；
+        @Override
+        protected Boolean doInBackground(Integer... params) {
+            cityInfoList.addAll(DataSupport.where("id > ?", "0").find(CityInfo.class));
+            if (cityInfoList.size() > 0) {
                 return true;
             } else {
                 LogUtil.e("tag", "doInBackground 查询失败");
@@ -153,8 +178,9 @@ public class ChooseCityActivity extends BaseActivity {
 
         @Override
         protected void onPostExecute(Boolean success) {
+            //隐藏loading布局
+            rlLoading.setVisibility(View.GONE);
             setAdapter();
-
         }
     }
 

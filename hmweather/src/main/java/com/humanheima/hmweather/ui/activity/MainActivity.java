@@ -1,8 +1,6 @@
 package com.humanheima.hmweather.ui.activity;
 
-import android.content.ContentValues;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -14,18 +12,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.github.promeg.pinyinhelper.Pinyin;
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
 import com.humanheima.hmweather.base.BaseFragment;
-import com.humanheima.hmweather.bean.CityInfo;
 import com.humanheima.hmweather.bean.WeatherBean;
 import com.humanheima.hmweather.ui.adapter.ViewPagerAdapter;
 import com.humanheima.hmweather.ui.fragment.MultiCityManageFragment;
 import com.humanheima.hmweather.ui.fragment.WeatherFragment;
-import com.humanheima.hmweather.utils.LogUtil;
-
-import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,14 +42,9 @@ public class MainActivity extends BaseActivity
     FloatingActionButton fab;
     @BindView(R.id.nav_view)
     NavigationView navView;
-    @BindView(R.id.drawer_layout)
-    DrawerLayout drawerLayout;
-
     private List<BaseFragment> fragmentList;
     private List<String> titleList;
     private ViewPagerAdapter viewPagerAdapter;
-    public List<CityInfo> cityInfos = new ArrayList<>();
-    public CityInfo cityInfo;
 
     @Override
     protected int bindLayout() {
@@ -66,6 +54,7 @@ public class MainActivity extends BaseActivity
     @Override
     protected void initData() {
         setSupportActionBar(toolbar);
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.setDrawerListener(toggle);
@@ -152,7 +141,8 @@ public class MainActivity extends BaseActivity
         }*/
 
 
-        drawerLayout.closeDrawer(GravityCompat.START);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -204,7 +194,7 @@ public class MainActivity extends BaseActivity
                     }
                 });*/
 
-        final List<CityInfo> list = DataSupport.where("id > ?", "0").find(CityInfo.class);
+        //final List<CityInfo> list = DataSupport.where("id > ?", "0").find(CityInfo.class);
       /*  if (list.size() > 0) {
             ContentValues values = new ContentValues();
             values.put("citypinyin", "");
@@ -213,7 +203,7 @@ public class MainActivity extends BaseActivity
                 LogUtil.e("tag", "updata success");
             }
         }*/
-        if (list.size() > 0) {
+       /* if (list.size() > 0) {
 
             new AsyncTask<Void, Void, Boolean>() {
                 @Override
@@ -224,7 +214,7 @@ public class MainActivity extends BaseActivity
                         String city = cityInfo.getCity();
                         id = cityInfo.getId();
                         char[] chars = city.toCharArray();
-                        String cityPinyin="";
+                        String cityPinyin = "";
                         String s = null;
                         for (int j = 0; j < chars.length; j++) {
                             s = Pinyin.toPinyin(chars[j]);
@@ -250,7 +240,7 @@ public class MainActivity extends BaseActivity
                     }
                 }
             }.execute();
-        }
+        }*/
 
       /*  NetWork.getApi().getWeatherByPost(cityInfo.getWeatherId(), C.KEY)
                 .subscribeOn(Schedulers.io())
