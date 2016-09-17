@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * åˆ†äº«å›¾ç‰‡çš„ä»»åŠ¡
+ */
 public class ShareWeatherTask extends AsyncTask<Void, Void, Boolean>{
 
 	private Activity activity;
@@ -32,7 +35,7 @@ public class ShareWeatherTask extends AsyncTask<Void, Void, Boolean>{
 	}
 	@Override
 	protected Boolean doInBackground(Void... args) {
-		// ½ØÈ¡ÆÁÄ»²¢±£´æ
+        //è¡—åŒºå±å¹•å¹¶ä¿å­˜
 		return saveSnapImgWithBar(activity);
 	}
 
@@ -41,14 +44,13 @@ public class ShareWeatherTask extends AsyncTask<Void, Void, Boolean>{
 	protected void onPostExecute(Boolean result) {
 		dialog.closeProgressDialog();
 		if (result) {
-            //Èç¹ûÍ¼Æ¬±£´æ³É¹¦
+            //å¦‚æœä¿å­˜å›¾ç‰‡æˆåŠŸ
             activity.startActivity(Intent.createChooser(createShareIntent(),activity.getString(R.string.weather_share)));
         } else {
-            Toast.makeText(activity, activity.getString(R.string.share_failed), Toast.LENGTH_LONG).show();
+            //Toast.makeText(activity, activity.getString(R.string.share_failed), Toast.LENGTH_LONG).show();
+            LogUtil.e("TAG","åˆ†äº«å¤±è´¥");
         }
 	}
-
-	
 	 private Intent createShareIntent() {
 	        Intent shareIntent = new Intent(Intent.ACTION_SEND);
 	        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -60,8 +62,10 @@ public class ShareWeatherTask extends AsyncTask<Void, Void, Boolean>{
 	        return shareIntent;
 	    }
 
-	/**
-     * ½ØÍ¼²¢±£´æ£¬±£´æÍ¼Æ¬.ÊÇÓĞ±êÌâÀ¸µÄ½ØÍ¼
+    /**
+     * æˆªå›¾å¹¶ä¿å­˜
+     * @param activity
+     * @return
      */
     private boolean saveSnapImgWithBar(Activity activity) {
         Bitmap bitmap = ScreenUtils.snapShotWithoutStatusBar(activity);
@@ -75,7 +79,6 @@ public class ShareWeatherTask extends AsyncTask<Void, Void, Boolean>{
                 succeed = bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
                 fos.flush();
                 fos.close();
-                //Toast.makeText(this, "½ØÆÁÎÄ¼şÒÑ±£´æÖÁSDCard/PicÄ¿Â¼ÏÂ",Toast.LENGTH_LONG).show();
             }
         } catch (IOException e) {
             e.printStackTrace();

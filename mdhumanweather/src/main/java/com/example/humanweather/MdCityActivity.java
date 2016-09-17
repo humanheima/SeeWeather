@@ -4,17 +4,17 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -34,7 +34,6 @@ import util.NetUtil;
 import util.PinYn4jUtil;
 import util.PinyinComparator;
 import util.SnackUtil;
-import view.ClearEditText;
 import view.SideBar;
 
 /**
@@ -56,7 +55,7 @@ public class MdCityActivity extends AppCompatActivity{
     private ListView lv_city;
     private CityListViewAdapter adapter;
 
-    LinearLayout llCity;
+    RelativeLayout rlCity;
     /**
      * 屏幕右边的A_Z列表
      */
@@ -64,7 +63,7 @@ public class MdCityActivity extends AppCompatActivity{
     /**
      * 输入文本框
      */
-    private ClearEditText clearEditText;
+    //private ClearEditText clearEditText;
     private List<WeatherCityModel> sourceDatalist;
     /**
      * 进度提示框
@@ -86,7 +85,7 @@ public class MdCityActivity extends AppCompatActivity{
         setSupportActionBar(toolbar);
     }
     private void findViews() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.cityToolbar);
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -98,7 +97,7 @@ public class MdCityActivity extends AppCompatActivity{
                 if (NetUtil.hasNetWork()) {
                     startLocate();
                 } else {
-                    SnackUtil.SnackShort(llCity, getString(R.string.net_error));
+                    SnackUtil.SnackShort(rlCity, getString(R.string.net_error));
                 }
             }
         });
@@ -123,9 +122,10 @@ public class MdCityActivity extends AppCompatActivity{
                 MdCityActivity.this.finish();
             }
         });
-        clearEditText = (ClearEditText) findViewById(R.id.filter_edit);
+        rlCity= (   RelativeLayout) findViewById(R.id.rlcity);
+        // clearEditText = (ClearEditText) findViewById(R.id.filter_edit);
         // 根据输入框输入值的改变来过滤搜索
-        clearEditText.addTextChangedListener(new TextWatcher() {
+      /*  clearEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before,
                                       int count) {
@@ -144,7 +144,7 @@ public class MdCityActivity extends AppCompatActivity{
             @Override
             public void afterTextChanged(Editable s) {
             }
-        });
+        });*/
         sideBar = (SideBar) findViewById(R.id.sidrbar);
         // 设置右侧触摸监听
         sideBar.setOnTouchingLetterChangedListener(new SideBar.OnTouchingLetterChangedListener() {
@@ -224,7 +224,7 @@ public class MdCityActivity extends AppCompatActivity{
         @Override
         public void onReceiveLocation(BDLocation bdLocation) {
             citynm = bdLocation.getDistrict() != null ? bdLocation.getDistrict() : bdLocation.getCity();
-            if (citynm.length() > 0) {
+            if (citynm!=null&&citynm.length() > 0) {
                 citynm = citynm.substring(0, citynm.length() - 1);
                 //tvLocCity.setText(citynm);
                 weaid = cityDB.queryWeaid(citynm);
@@ -235,7 +235,7 @@ public class MdCityActivity extends AppCompatActivity{
                 LocateDialogFragment dialogFragment = LocateDialogFragment.newInstance(citynm, weaid);
                 dialogFragment.show(getSupportFragmentManager(), weaid);
             } else {
-                SnackUtil.SnackShort(llCity, getString(R.string.loc_failed));
+                SnackUtil.SnackShort(rlCity, getString(R.string.loc_failed));
             }
             locationClient.unRegisterLocationListener(listener);
             locationClient.stop();
@@ -243,6 +243,28 @@ public class MdCityActivity extends AppCompatActivity{
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.city_menu,menu);
+        MenuItem searchItem=menu.findItem(R.id.action_search);
+        SearchView searchView= (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String queryCitynm) {
+                // 当输入框里面的值为空，更新为原来的列表，否则为过滤数据列表
+                String citynm = PinYn4jUtil.getPinYin(queryCitynm).toLowerCase();
+                filterData(citynm);
+                return true;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();

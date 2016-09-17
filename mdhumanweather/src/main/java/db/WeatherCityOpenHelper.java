@@ -4,25 +4,24 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/**ÊµÊ±ÌìÆøÊı¾İ¿â¶ÔÓ¦µÄhelper
- * @author dumignwei
- *
+/**
+ * å®æ—¶å¤©æ°”å¯¹åº”çš„æ•°æ®åº“helper
  */
 public class WeatherCityOpenHelper extends SQLiteOpenHelper {
 
 	public static final int VERSION = 1;
-	/**¹¹Ôìº¯Êı
+
+	/**
+	 * æ„é€ å‡½æ•°
 	 * @param context
-	 */
+     */
 	public WeatherCityOpenHelper(Context context) {
 		super(context, WeatherCityDB.DB_NAME, null, VERSION);
 	}
-
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 
 	}
-
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 

@@ -16,173 +16,136 @@ import java.util.List;
 
 import model.WeatherCityModel;
 
-/**ÊµÊ±ÌìÆøÄ£ĞÍ¶ÔÓ¦µÄÊı¾İ¿â
- *
+/**
+ * åŸå¸‚åˆ—è¡¨çš„æ•°æ®åº“
  */
 public class WeatherCityDB {
 
-	private Context context;
-	/**
-	 * Êı¾İ¿âÃû
-	 */
-	public static final String DB_NAME = "Weather_city.db";
-	/**
-	 * Êı¾İ¿â°æ±¾
-	 */
+    private Context context;
+    /**
+     * æ•°æ®åº“çš„åå­—
+     */
+    public static final String DB_NAME = "Weather_city.db";
 
-	private SQLiteDatabase db;
+    private SQLiteDatabase db;
 
-	private WeatherCityOpenHelper helper;
+    private WeatherCityOpenHelper helper;
 
-	private final int BUFFER_SIZE = 4096;// 4KBµÄ´óĞ¡
-	public static final String PACKAGE_NAME = "com.example.humanweather";
+    private final int BUFFER_SIZE = 4096;//4kb
+    public static final String PACKAGE_NAME = "com.example.humanweather";
 
-	public static final String DB_PATH = "/data"
-			+ Environment.getDataDirectory().getAbsolutePath() + "/"
-			+ PACKAGE_NAME + "/databases";
+    public static final String DB_PATH = "/data"
+            + Environment.getDataDirectory().getAbsolutePath() + "/"
+            + PACKAGE_NAME + "/databases";
 
-	/**
-	 * ¹¹Ôì·½·¨
-	 * 
-	 * @param context
-	 */
-	public WeatherCityDB(Context context) {
+    /**
+     * æ„é€ å‡½æ•°
+     * @param context
+     */
+    public WeatherCityDB(Context context) {
+        this.context = context;
+        helper = new WeatherCityOpenHelper(this.context);
+        copyDatabase();
+    }
 
-		this.context = context;
-		helper = new WeatherCityOpenHelper(this.context);
-		copyDatabase();
-	}
+    /**
+     * æŠŠrawç›®å½•ä¸‹çš„æ•°æ®åº“æ–‡ä»¶å¤åˆ¶åˆ°æœ¬åœ°
+     * @return
+     */
+    public boolean copyDatabase() {
 
-	/**
-	 * °ÑresÄ¿Â¼ÏÂµÄrawÄ¿Â¼ÏÂµÄÊı¾İ¿âÎÄ¼ş¸´ÖÆµ½Ö¸¶¨Î»ÖÃ
-	 * 
-	 * @return
-	 */
-	public boolean copyDatabase() {
+        File filedb = new File(DB_PATH + "/" + DB_NAME);
+        if (!filedb.exists()) {
+            File file = new File(DB_PATH);
+            if (!file.isDirectory())
+                file.mkdir();
+            String dbfile = DB_PATH + "/" + DB_NAME;
 
-		File filedb = new File(DB_PATH + "/" + DB_NAME);
-		if (!filedb.exists()) {
-			File file = new File(DB_PATH);
-			if (!file.isDirectory())
-				file.mkdir();
-			String dbfile = DB_PATH + "/" + DB_NAME;
+            InputStream is = null;
+            FileOutputStream fos = null;
+            try {
+                if (new File(dbfile).length() == 0) {
 
-			InputStream is = null;
-			FileOutputStream fos = null;
-			try {
-				if (new File(dbfile).length() == 0) {
+                    is = this.context.getResources().openRawResource(
+                            R.raw.weather_city);
+                    fos = new FileOutputStream(dbfile);
 
-					is = this.context.getResources().openRawResource(
-							R.raw.weather_city);
-					fos = new FileOutputStream(dbfile);
+                    byte[] buffer = new byte[BUFFER_SIZE];
+                    int len = -1;
+                    while ((len = is.read(buffer)) != -1) {
+                        fos.write(buffer, 0, len);
+                    }
 
-					byte[] buffer = new byte[BUFFER_SIZE];
-					int len = -1;
-					while ((len = is.read(buffer)) != -1) {
-						fos.write(buffer, 0, len);
-					}
+                }
+            } catch (Exception e) {
 
-				}
-			} catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            } finally {
+                try {
+                    if (fos != null) {
+                        fos.close();
+                        fos.flush();
+                    }
+                    if (is != null) {
+                        is.close();
+                    }
+                } catch (Exception e2) {
+                    e2.printStackTrace();
+                    return false;
+                }
+            }
+            return true;
 
-				e.printStackTrace();
-				return false;
-			} finally {
-				try {
-					if (fos != null) {
-						fos.close();
-						fos.flush();
-					}
-					if (is != null) {
-						is.close();
-					}
-				} catch (Exception e2) {
-					e2.printStackTrace();
-					return false;
-				}
-			}
-			return true;
+        } else {
 
-		} else {
+            return true;
+        }
 
-			return true;
-		}
+    }
 
-	}
+    /**
+     * æ ¹æ®åŸå¸‚åå­—æŸ¥è¯¢åŸå¸‚çš„å¤©æ°”id
+     * @param citynm
+     * @return
+     */
+    public String queryWeaid(String citynm) {
 
-	/**
-	 * ´ÓÊı¾İ¿âÀï²éÑ¯ÏàÓ¦µÄweaid
-	 * 
-	 * @param citynm
-	 * @return
-	 */
-	public String queryWeaid(String citynm) {
+        db = helper.getReadableDatabase();
+        String weaid = "";
+        String sql = "select weaid from WeatherCity where citynm =?";
+        Cursor cr = db.rawQuery(sql, new String[]{citynm});
+        if (cr.moveToFirst()) {
 
-		db = helper.getReadableDatabase();
-		String weaid = "";
-		String sql = "select weaid from WeatherCity where citynm =?";
-		Cursor cr = db.rawQuery(sql, new String[] { citynm });
-		if (cr.moveToFirst()) {
-			
-			weaid = cr.getString(cr.getColumnIndex("weaid"));
-			Log.e("TAG", "weaid====" + weaid);
-		}
-		cr.close();
-		//cr.moveToFirst();
-		return weaid;
-	}
+            weaid = cr.getString(cr.getColumnIndex("weaid"));
+            Log.e("TAG", "weaid====" + weaid);
+        }
+        cr.close();
+        //cr.moveToFirst();
+        return weaid;
+    }
 
-	/**
-	 * ´ÓÊı¾İ¿â¶ÁÈ¡ËùÓĞ³ÇÊĞµÄĞÅÏ¢
-	 * 
-	 * @return
-	 */
-	public List<WeatherCityModel> loadCity() {
+    /**
+     * æŸ¥è¯¢æ•°æ®åº“é‡Œçš„å¤©æ°”ä¿¡æ¯
+     * @return
+     */
+    public List<WeatherCityModel> loadCity() {
 
-		db = helper.getReadableDatabase();
-		List<WeatherCityModel> list = new ArrayList<WeatherCityModel>();
-		Cursor cursor = db.query("WeatherCity", new String[] { "weaid",
-				"citynm", "cityno" }, null, null, null, null, null);
-		if (cursor.moveToFirst()) {
-			do {
-				WeatherCityModel weatherCityModel = new WeatherCityModel();
-				// weatherCityModel.setId(cursor.getInt(cursor.getColumnIndex("id")));
-
-				weatherCityModel.setWeaid(cursor.getString(cursor
-						.getColumnIndex("weaid")));
-
-				// weatherCityModel.setCityid(cursor.getString(cursor.getColumnIndex("cityid")));
-
-				weatherCityModel.setCitynm(cursor.getString(cursor
-						.getColumnIndex("citynm")));
-
-				weatherCityModel.setCityno(cursor.getString(cursor
-						.getColumnIndex("cityno")));
-
-				list.add(weatherCityModel);
-
-			} while (cursor.moveToNext());
-		}
-		return list;
-	}
-
-	/**
-	 * ½«WeatherCityModelÊµÀı´æµ½Êı¾İ¿â
-	 * 
-	 * @param weatherCityModel
-	 */
-	// public void saveWeatherCityModel(WeatherCityModel weatherCityModel) {
-	//
-	// if (weatherCityModel != null) {
-	//
-	// ContentValues values = new ContentValues();
-	// values.put("weaid", weatherCityModel.getWeaid());
-	// values.put("cityid", weatherCityModel.getCityid());
-	// values.put("citynm", weatherCityModel.getCitynm());
-	// values.put("cityno", weatherCityModel.getCityno());
-	//
-	// db.insert("WeatherCity", null, values);
-	// }
-	// }
-
+        db = helper.getReadableDatabase();
+        List<WeatherCityModel> list = new ArrayList<WeatherCityModel>();
+        Cursor cursor = db.query("WeatherCity", new String[]{"weaid", "citynm", "cityno"}, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                WeatherCityModel weatherCityModel = new WeatherCityModel();
+                // weatherCityModel.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                weatherCityModel.setWeaid(cursor.getString(cursor.getColumnIndex("weaid")));
+                // weatherCityModel.setCityid(cursor.getString(cursor.getColumnIndex("cityid")));
+                weatherCityModel.setCitynm(cursor.getString(cursor.getColumnIndex("citynm")));
+                weatherCityModel.setCityno(cursor.getString(cursor.getColumnIndex("cityno")));
+                list.add(weatherCityModel);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
+    }
 }

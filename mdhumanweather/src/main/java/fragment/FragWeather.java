@@ -3,8 +3,6 @@ package fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +15,14 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.humanweather.FeatureWeatherActivity;
+import com.example.humanweather.MdFeaWeaActivity;
 import com.example.humanweather.MyApp;
 import com.example.humanweather.R;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import util.LogUtil;
 import util.NetUtil;
 import util.ShowImageUtil;
 import util.SnackUtil;
@@ -31,40 +31,28 @@ import util.SnackUtil;
  * Created by Administrator on 2016/4/14.
  */
 public class FragWeather extends BaseFragment {
-    private static final String ARG_WEAID = "weaid",ARG_CITYNA = "citynm";
-    public  String weaid,citynm;//天气id
+    private static final String ARG_WEAID = "weaid", ARG_CITYNA = "citynm", DEFAULT_VALUE = "--";
+    public  String weaid = "", citynm = "";//天气id
     private View view;
-    // 下拉刷新控件
-    //private ScrollView scrollView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ImageView im_weather;// 天气图片
-    public RelativeLayout rtLayout;//Fragment最外层的布局
+    public RelativeLayout rtLayout;
+    private ViewGroup viewGroup;
     /**
      * 分别代表：日期，城市名，星期几，实时温度，实时湿度，温度范围，天气，风向，风速，pm2.5，天气指数
      */
     private TextView tv_days, tv_citynm, tv_week, tv_temperature_curr, tvHumidity, tv_temperature, tv_weather, tv_wind, tv_winp, tvAqi, tvQuality, TvTravel;
-    //	private Button btnFeature;
     private TextView tvFeature;
-    /**
-     * 用来标识刷新是否成功
-     */
-    //public static String SUCCESS = "1";
-    //public static String refreshSucceed = "刷新成功";
-    // public static String refreshFailed = "刷新失败";
     private String weaSuccess = "x";
     private String pmSuccess = "y";
 
-    public FragWeather(){
-
+    public FragWeather() {
     }
-    //构造函数
-   /* public FragWeather(String weaid) {
-        this.weaid = weaid;
-    }*/
 
     /**
      * Use this factory method to create a new instance of this fragment using the provided parameters.
-     * @param weaid
+     *
+     * @param weaid 天气预报城市id
      * @return A new instance of fragment BlankFragment.
      */
     public static FragWeather newInstance(String weaid) {
@@ -75,6 +63,7 @@ public class FragWeather extends BaseFragment {
         fragment.setArguments(args);
         return fragment;
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,44 +71,46 @@ public class FragWeather extends BaseFragment {
             weaid = getArguments().getString(ARG_WEAID);
         }
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.frag_weather, container, false);
         findViews(view);
-        setViews(view);
+        setViews();
         return view;
     }
 
     /**
      * 应该先从pref里面得到数据，如果为空则发送请求
      */
-    private void setViews(View view) {
-
+    private void setViews() {
         if (pref.getString(weaid + "temperature_curr", null) == null) {
+            //LogUtil.e("tag", "temperature_curr" + pref.getString(weaid + "temperature_curr", null));
             //请求实时天气
+           // LogUtil.e("TAG", "fragweather_weaid" + weaid);
+
             sendCurWeatherReq(weaid);
             //请求PM2.5信息
             sendPMReq(weaid);
         } else {
-            String weatherStr = pref.getString(weaid + "weather", null);
-            rainSnow = pref.getString(weaid + "weather", null);
-            citynm=pref.getString(weaid+"citynm",null);
+            String weatherStr = pref.getString(weaid + "weather", DEFAULT_VALUE);
+            rainSnow = weatherStr;
             //下雨还是下雪
-            rainOrSnow(rtLayout, rainSnow);
-            tv_temperature_curr.setText(pref.getString(weaid + "temperature_curr", null));
+            rainOrSnow(viewGroup, rainSnow);
             ShowImageUtil.getInstance().showDayWeatherImage(getActivity(), weatherStr, im_weather, rtLayout);
+            tv_temperature_curr.setText(pref.getString(weaid + "temperature_curr", DEFAULT_VALUE));
+            citynm = pref.getString(weaid + "citynm", DEFAULT_VALUE);
             tv_weather.setText(weatherStr);
-            tv_days.setText(pref.getString(weaid + "days", null));
-            //tv_citynm.setText(pref.getString(weaid + "citynm", null));
+            tv_days.setText(pref.getString(weaid + "days", DEFAULT_VALUE));
             tv_citynm.setText(citynm);
-            tv_week.setText(pref.getString(weaid + "week", null));
-            tvAqi.setText(pref.getString(weaid + "aqi", null));
-            tvQuality.setText(pref.getString(weaid + "aqi_levnm", null));
-            tv_temperature.setText(pref.getString(weaid + "temperature", null));
-            tvHumidity.setText(pref.getString(weaid + "humidity", null));
-            tv_wind.setText(pref.getString(weaid + "wind", null));
-            tv_winp.setText(pref.getString(weaid + "winp", null));
-            TvTravel.setText(pref.getString(weaid + "aqi_remark", null));
+            tv_week.setText(pref.getString(weaid + "week", DEFAULT_VALUE));
+            tvAqi.setText(pref.getString(weaid + "aqi", DEFAULT_VALUE));
+            tvQuality.setText(pref.getString(weaid + "aqi_levnm", DEFAULT_VALUE));
+            tv_temperature.setText(pref.getString(weaid + "temperature", DEFAULT_VALUE));
+            tvHumidity.setText(pref.getString(weaid + "humidity", DEFAULT_VALUE));
+            tv_wind.setText(pref.getString(weaid + "wind", DEFAULT_VALUE));
+            tv_winp.setText(pref.getString(weaid + "winp", DEFAULT_VALUE));
+            TvTravel.setText(pref.getString(weaid + "aqi_remark", DEFAULT_VALUE));
         }
     }
 
@@ -128,16 +119,17 @@ public class FragWeather extends BaseFragment {
      *
      * @param view
      */
-    private void findViews(View view) {
+    private void findViews(final View view) {
 
         rtLayout = (RelativeLayout) view.findViewById(R.id.rtLayout);
+        viewGroup = (ViewGroup) view.findViewById(R.id.rtLayout);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_blue_dark, android.R.color.darker_gray, android.R.color.holo_blue_bright);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-
             @Override
             public void onRefresh() {
-                rtLayout.removeView(minRainSnowView);
+                //rtLayout.removeView(minRainSnowView);
+                //viewGroup.removeViewAt(0);
                 swipeRefreshLayout.setRefreshing(true);
                 new MyRequestTask().execute(weaid);
             }
@@ -155,7 +147,6 @@ public class FragWeather extends BaseFragment {
         tvAqi = (TextView) view.findViewById(R.id.tvAqi);
         tvQuality = (TextView) view.findViewById(R.id.tvQuality);
         TvTravel = (TextView) view.findViewById(R.id.TvTravel);
-
         tvFeature = (TextView) view.findViewById(R.id.tvFeature);
         tvFeature.setOnClickListener(this);
     }
@@ -178,7 +169,6 @@ public class FragWeather extends BaseFragment {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            //pullToRefreshScrollView.onRefreshComplete();//下拉刷新完成
             swipeRefreshLayout.setRefreshing(false);
         }
     }
@@ -198,12 +188,12 @@ public class FragWeather extends BaseFragment {
                 public void onResponse(JSONObject response) {
                     // 返回的是一个json数组
                     try {
+                        LogUtil.e("TAG", "response" + response.toString());
                         weaSuccess = response.getString("success");
                         if ("1".equals(weaSuccess)) {//有数据
-
                             JSONObject jsonObject = response.optJSONObject("result");
                             tv_days.setText(jsonObject.getString("days"));
-                            citynm=jsonObject.getString("citynm");
+                            citynm = jsonObject.getString("citynm");
                             //tv_citynm.setText(jsonObject.getString("citynm"));
                             tv_citynm.setText(citynm);
                             tv_week.setText(jsonObject.getString("week"));
@@ -212,46 +202,47 @@ public class FragWeather extends BaseFragment {
                             tvHumidity.setText(jsonObject.getString("humidity"));
                             tv_wind.setText(jsonObject.getString("wind"));
                             tv_winp.setText(jsonObject.getString("winp"));
-                            tv_weather.setText(jsonObject.getString("weather"));
+                            String weatherStr = jsonObject.getString("weather");
+                            rainSnow = weatherStr;
+                            ShowImageUtil.getInstance().showDayWeatherImage(getActivity(), weatherStr, im_weather, rtLayout);
+                            if (viewGroup.getChildAt(0) != null) {
+                                viewGroup.removeViewAt(0);
+                            }
+                            rainOrSnow(viewGroup, rainSnow);
+                            tv_weather.setText(weatherStr);
                             editor.putString(weaid + "days", jsonObject.getString("days"));
                             editor.putString(weaid + "citynm", jsonObject.getString("citynm"));
                             editor.putString(weaid + "week", jsonObject.getString("week"));
                             editor.putString(weaid + "temperature_curr", jsonObject.getString("temperature_curr"));
+                            LogUtil.e("tag", "what is wraong temperature_curr" + jsonObject.getString("temperature_curr"));
                             editor.putString(weaid + "temperature", jsonObject.getString("temperature"));
                             editor.putString(weaid + "humidity", jsonObject.getString("humidity"));
                             editor.putString(weaid + "wind", jsonObject.getString("wind"));
                             editor.putString(weaid + "winp", jsonObject.getString("winp"));
                             editor.putString(weaid + "weather", jsonObject.getString("weather"));
                             editor.commit();
-                            //Log.e("TAG", "json"+tv_weather.getText().toString());
-                            // 显示天气图片
-                            String weatherStr = jsonObject.getString("weather");
-                            rainSnow = jsonObject.getString("weather");
-                            if (weatherStr == null) {
-                                weatherStr = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(weaid + "weather", "晴");
-                            }
-                            ShowImageUtil.getInstance().showDayWeatherImage(getActivity(), weatherStr, im_weather, rtLayout);
 
-                            rainOrSnow(rtLayout, rainSnow);
                         }
-                    } catch (Exception e) {
-
+                    } catch (JSONException e) {
+                        //SnackUtil.SnackShort(tv_temperature_curr,getString(R.string.update_exception));
+                        LogUtil.e("TAG", "解析天气数据异常");
                     }
-                    //Toast.makeText(getActivity(), getString(R.string.update_success), Toast.LENGTH_SHORT).show();
-                    SnackUtil.SnackShort(rtLayout,getString(R.string.update_success));
+                    SnackUtil.SnackShort(tv_temperature_curr,getString(R.string.update_success));
+                    swipeRefreshLayout.setRefreshing(false);
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     //Toast.makeText(getActivity(), getString(R.string.update_failed), Toast.LENGTH_SHORT).show();
-                    SnackUtil.SnackShort(rtLayout,getString(R.string.update_failed));
-                    //Log.e("TAG", "请求实时天气失败");
+                    //swipeRefreshLayout.setRefreshing(false);
 
                 }
             });
             MyApp.getVolleyQueue().add(request);
         } else {
-            SnackUtil.SnackShort(rtLayout,getString(R.string.net_error));
+            SnackUtil.SnackShort(tv_temperature_curr,getString(R.string.net_error));
+            swipeRefreshLayout.setRefreshing(false);
+            //LogUtil.e("TAG", "sendCurWeatherReq没有网络");
         }
     }
 
@@ -282,30 +273,30 @@ public class FragWeather extends BaseFragment {
                             editor.commit();
                         }
                     } catch (Exception e) {
-
+                        LogUtil.e("TAG", "请求pm2.5出错");
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     //Log.e("TAG", "请求PM2.5失败");
-                    SnackUtil.SnackShort(rtLayout,getString(R.string.update_failed));
 
                 }
             });
             MyApp.getVolleyQueue().add(request);
         } else {
-            SnackUtil.SnackShort(rtLayout,getString(R.string.net_error));
+            LogUtil.e("TAG", "sendPMReq 请检查网络连接");
         }
 
     }
+
     @Override
     public void onClick(View view) {
 
         switch (view.getId()) {
             case R.id.tvFeature:
                 // 查看天气走向
-                Intent featurIntent = new Intent(getActivity(), FeatureWeatherActivity.class);
+                Intent featurIntent = new Intent(getActivity(), MdFeaWeaActivity.class);
                 featurIntent.putExtra("weaid", weaid);
                 featurIntent.putExtra("citynm", citynm);
                 startActivity(featurIntent);

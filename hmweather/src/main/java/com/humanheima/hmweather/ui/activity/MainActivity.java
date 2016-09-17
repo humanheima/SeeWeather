@@ -3,7 +3,6 @@ package com.humanheima.hmweather.ui.activity;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -17,7 +16,6 @@ import com.humanheima.hmweather.base.BaseActivity;
 import com.humanheima.hmweather.base.BaseFragment;
 import com.humanheima.hmweather.bean.WeatherBean;
 import com.humanheima.hmweather.ui.adapter.ViewPagerAdapter;
-import com.humanheima.hmweather.ui.fragment.MultiCityManageFragment;
 import com.humanheima.hmweather.ui.fragment.WeatherFragment;
 
 import java.util.ArrayList;
@@ -34,8 +32,6 @@ public class MainActivity extends BaseActivity
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.tabLayout)
-    TabLayout tabLayout;
     @BindView(R.id.viewPager)
     ViewPager viewPager;
     @BindView(R.id.fab)
@@ -43,7 +39,6 @@ public class MainActivity extends BaseActivity
     @BindView(R.id.nav_view)
     NavigationView navView;
     private List<BaseFragment> fragmentList;
-    private List<String> titleList;
     private ViewPagerAdapter viewPagerAdapter;
 
     @Override
@@ -68,15 +63,10 @@ public class MainActivity extends BaseActivity
 
     private void initViewPager() {
         fragmentList = new ArrayList<>();
-        titleList = new ArrayList<>();
         fragmentList.add(new WeatherFragment());
-        fragmentList.add(new MultiCityManageFragment());
-        titleList.add("城市名");
-        titleList.add("多城市管理");
-
-        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), fragmentList, titleList);
+        //fragmentList.add(new WeatherFragment());
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), fragmentList);
         viewPager.setAdapter(viewPagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
     }
 
     @Override

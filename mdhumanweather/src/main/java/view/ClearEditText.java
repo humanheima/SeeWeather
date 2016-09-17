@@ -12,16 +12,14 @@ import android.widget.EditText;
 
 import com.example.humanweather.R;
 
-/**◊‘∂®“Âµƒ¥¯«Â≥˝∞¥≈•µƒŒƒ±æÀ—À˜øÚ
- * ≥« –¡–±ÌΩÁ√Ê π”√µΩ¡À∏√◊‘∂®“Âøÿº˛
- * @author dumingwei
- *
+/**
+ * Ëá™ÂÆö‰πâÁöÑÂ∏¶Ê∏ÖÈô§ÊåâÈíÆÁöÑÊñáÊú¨ÊêúÁ¥¢Ê°Ü
  */
 public class ClearEditText extends EditText implements  
-        OnFocusChangeListener, TextWatcher { 
-	/**
-	 * …æ≥˝∞¥≈•µƒ“˝”√
-	 */
+        OnFocusChangeListener, TextWatcher {
+    /**
+     * Âà†Èô§ÊåâÈíÆÁöÑÂºïÁî®
+     */
     private Drawable mClearDrawable; 
  
     public ClearEditText(Context context) { 
@@ -29,7 +27,7 @@ public class ClearEditText extends EditText implements
     } 
  
     public ClearEditText(Context context, AttributeSet attrs) { 
-    	//’‚¿Ôππ‘Ï∑Ω∑®“≤∫‹÷ÿ“™£¨≤ªº”’‚∏ˆ∫‹∂‡ Ù–‘≤ªƒ‹‘⁄XML¿Ô√Ê∂®“Â
+    	//ËøôÈáåÁöÑÊûÑÈÄ†ÊñπÊ≥ïÂæàÈáçË¶ÅÔºå‰∏çÂä†Ëøô‰∏™ÂæàÂ§öÂ±ûÊÄß‰∏çËÉΩÂÜçxmlÈáåÈù¢ÂÆö‰πâ
     	this(context, attrs, android.R.attr.editTextStyle); 
     } 
     
@@ -40,44 +38,47 @@ public class ClearEditText extends EditText implements
     
     
     private void init() { 
-    	//ªÒ»°EditTextµƒDrawableRight,ºŸ»Á√ª”–…Ë÷√Œ“√«æÕ π”√ƒ¨»œµƒÕº∆¨
+    //Ëé∑ÂèñEditTextÁöÑDrawableRightÔºåÂÅáÂ¶ÇÊ≤°ÊúâËÆæÁΩÆÊàë‰ª¨Â∞±‰ΩøÁî®ÈªòËÆ§ÁöÑÂõæÁâá
     	mClearDrawable = getCompoundDrawables()[2]; 
         if (mClearDrawable == null) { 
-        	mClearDrawable = getResources().getDrawable(R.drawable.clear_input); 
+        	mClearDrawable = getResources().getDrawable(R.drawable.clear_input);
         } 
         //Specify a bounding rectangle for the Drawable. This is where the drawable will draw when its draw() method is called. 
         mClearDrawable.setBounds(0, 0, mClearDrawable.getIntrinsicWidth(), mClearDrawable.getIntrinsicHeight()); 
-      //ƒ¨»œ…Ë÷√“˛≤ÿÕº±Í 
-        setClearIconVisible(false); 
-      //…Ë÷√Ωπµ„∏ƒ±‰µƒº‡Ã˝
+        //ÈªòËÆ§ËÆæÁΩÆÈöêËóèÂõæÁâá
+        setClearIconVisible(false);
+        //ËÆæÁΩÆÁÑ¶ÁÇπÊîπÂèòÁöÑÁõëÂê¨
         setOnFocusChangeListener(this); 
-        //…Ë÷√ ‰»ÎøÚ¿Ô√Êƒ⁄»›∑¢…˙∏ƒ±‰µƒº‡Ã˝  
+        //ËÆæÁΩÆËæìÂÖ•Ê°ÜÈáåÈù¢ÂÜÖÂÆπÂèëÁîüÊîπÂèòÁöÑÁõëÂê¨
         addTextChangedListener(this); 
-    } 
- 
- 
+    }
+
     /**
-     * “ÚŒ™Œ“√«≤ªƒ‹÷±Ω”∏¯EditText…Ë÷√µ„ª˜ ¬º˛£¨À˘“‘Œ“√«”√º«◊°Œ“√«∞¥œ¬µƒŒª÷√¿¥ƒ£ƒ‚µ„ª˜ ¬º˛
-     * µ±Œ“√«∞¥œ¬µƒŒª÷√ ‘⁄  EditTextµƒøÌ∂» - Õº±ÍµΩøÿº˛”“±ﬂµƒº‰æ‡ - Õº±ÍµƒøÌ∂»  ∫Õ
-     * EditTextµƒøÌ∂» - Õº±ÍµΩøÿº˛”“±ﬂµƒº‰æ‡÷Æº‰Œ“√«æÕÀ„µ„ª˜¡ÀÕº±Í£¨ ˙÷±∑ΩœÚ√ª”–øº¬«
+     * Âõ†‰∏∫Êàë‰ª¨‰∏çËÉΩÁõ¥Êé•ÁªôEditTextËÆæÁΩÆÁÇπÂáª‰∫ã‰ª∂ÔºåÊâÄ‰ª•Êàë‰ª¨Áî®ËÆ∞‰ΩèÊàë‰ª¨Êåâ‰∏ãÁöÑ‰ΩçÁΩÆÊù•Ê®°ÊãüÁÇπÂáª‰∫ã‰ª∂
+     * ÂΩìÊàë‰ª¨Êåâ‰∏ãÁöÑ‰ΩçÁΩÆÂú®EditTextÁöÑÂÆΩÂ∫¶-ÂõæÊ†áÂà∞Êéß‰ª∂Âè≥ËæπÁöÑÈó¥Ë∑ù-ÂõæÊ†áÁöÑÂÆΩÂ∫¶Âíå
+     * EditTextÁöÑÂÆΩÂ∫¶-ÂõæÊ†áÂà∞Êéß‰ª∂ÁöÑÈó¥Ë∑ù‰πãÈó¥Â∞±ÁÆóÁÇπÂáª‰∫ÜÂõæÊ†áÔºåÊï∞ÂÄºÊñπÂêëÊ≤°ÊúâËÄÉËôë
+     * @param event
+     * @return
      */
     @Override 
     public boolean onTouchEvent(MotionEvent event) { 
-    	//»Áπ˚drawableRight≤ªŒ™ø’
+    	//Â¶ÇÊûúdrawableRight‰∏ç‰∏∫Á©∫
         if (getCompoundDrawables()[2] != null) {
         	if(event.getAction()==MotionEvent.ACTION_UP) {
         		boolean touchable = event.getX() > (getWidth() - getPaddingRight() - mClearDrawable.getIntrinsicWidth()) && (event.getX() < ((getWidth() - getPaddingRight())));
-            	//»Áπ˚¥•√˛µƒŒª÷√‘⁄Õº∆¨µƒ∑∂Œßƒ⁄£¨«Âø’EditText
+            	//Â¶ÇÊûúËß¶Êë∏ÁöÑ‰ΩçÁΩÆÂú®ÂõæÁâáÁöÑËåÉÂõ¥‰πãÂÜÖÔºåÊ∏ÖÁ©∫EditText
                 if (touchable) { 
                     this.setText(""); 
                 } 
 			}
         } 
         return super.onTouchEvent(event); 
-    } 
- 
+    }
+
     /**
-     * µ±ClearEditTextΩπµ„∑¢…˙±‰ªØµƒ ±∫Ú£¨≈–∂œ¿Ô√Ê◊÷∑˚¥Æ≥§∂»…Ë÷√«Â≥˝Õº±Íµƒœ‘ æ”Î“˛≤ÿ
+     * ÂΩìclearEditTextÁöÑÁÑ¶ÁÇπÂèëÁîüÂèòÂåñÁöÑÊó∂ÂÄôÔºåÂà§Êñ≠ÈáåÈù¢ÁöÑÂ≠óÁ¨¶‰∏≤ÈïøÂ∫¶ËÆæÁΩÆÊ∏ÖÈô§ÂõæÊ†áÁöÑÊòæÁ§∫‰∏éÈöêËóè
+     * @param v
+     * @param hasFocus
      */
     @Override 
     public void onFocusChange(View v, boolean hasFocus) { 
@@ -86,59 +87,36 @@ public class ClearEditText extends EditText implements
         } else { 
             setClearIconVisible(false); 
         } 
-    } 
- 
- 
+    }
+
     /**
-     * …Ë÷√«Â≥˝Õº±Íµƒœ‘ æ”Î“˛≤ÿ£¨µ˜”√setCompoundDrawablesŒ™EditTextªÊ÷∆…œ»•
+     * ËÆæÁΩÆÊ∏ÖÈô§ÂõæÊ†áÁöÑÊòæÁ§∫‰∏éÈöêËóèÔºåË∞ÉÁî®setCompoundDrawables‰∏∫EditTextÁªòÂà∂‰∏äÂéª
      * @param visible
      */
     protected void setClearIconVisible(boolean visible) { 
         Drawable right = visible ? mClearDrawable : null; 
         setCompoundDrawables(getCompoundDrawables()[0],getCompoundDrawables()[1], right, getCompoundDrawables()[3]); 
-    } 
-     
-    
+    }
+
     /**
-     * µ± ‰»ÎøÚ¿Ô√Êƒ⁄»›∑¢…˙±‰ªØµƒ ±∫Úªÿµ˜µƒ∑Ω∑®
+     * ÂΩìËæìÂÖ•Ê°ÜÈáåÈù¢ÁöÑÂÜÖÂÆπÂèëÁîüÂèòÂåñÁöÑÊó∂ÂÄôË∞ÉÁî®
+     * @param s
+     * @param start
+     * @param count
+     * @param after
      */
     @Override 
     public void onTextChanged(CharSequence s, int start, int count, 
             int after) { 
         setClearIconVisible(s.length() > 0); 
     } 
- 
-    @Override 
+    @Override
     public void beforeTextChanged(CharSequence s, int start, int count, 
             int after) { 
          
     } 
- 
-    @Override 
+    @Override
     public void afterTextChanged(Editable s) { 
-         
-    } 
-    
-   
-//    /**
-//     * …Ë÷√ªŒ∂Ø∂Øª≠
-//     */
-//    public void setShakeAnimation(){
-//    	this.setAnimation(shakeAnimation(5));
-//    }
-//    
-//    
-//    /**
-//     * ªŒ∂Ø∂Øª≠
-//     * @param counts 1√Î÷”ªŒ∂Ø∂‡…Ÿœ¬
-//     * @return
-//     */
-//    public static Animation shakeAnimation(int counts){
-//    	Animation translateAnimation = new TranslateAnimation(0, 10, 0, 0);
-//    	translateAnimation.setInterpolator(new CycleInterpolator(counts));
-//    	translateAnimation.setDuration(1000);
-//    	return translateAnimation;
-//    }
- 
- 
+
+    }
 }

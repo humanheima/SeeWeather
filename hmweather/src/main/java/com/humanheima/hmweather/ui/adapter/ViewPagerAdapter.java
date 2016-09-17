@@ -14,17 +14,10 @@ import java.util.List;
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 
     List<BaseFragment> fragmentList;
-    List<String> titleList;
 
-    public ViewPagerAdapter(FragmentManager fm, List<BaseFragment> fragmentList, List<String> titleList) {
+    public ViewPagerAdapter(FragmentManager fm, List<BaseFragment> fragmentList) {
         super(fm);
         this.fragmentList = fragmentList;
-        this.titleList = titleList;
-    }
-
-    @Override
-    public CharSequence getPageTitle(int position) {
-        return titleList.get(position);
     }
 
     @Override

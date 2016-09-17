@@ -1,6 +1,6 @@
 package model;
 
-/**³ÇÊÐµÄÄ£ÐÍ
+/**åŸŽå¸‚çš„æ¨¡åž‹
  * @author dumingwei
  *
  */
@@ -8,7 +8,7 @@ public class WeatherCityModel {
 
 	/*
 	 * "weaid": "1",
-	 * "citynm": "±±¾©",
+	 * "citynm": "ï¿½ï¿½ï¿½ï¿½",
 	 * "cityno": "beijing",
 	 * "cityid": "101010100"
 	 */

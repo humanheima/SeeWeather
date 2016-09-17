@@ -31,9 +31,10 @@ public class RainSnowView extends BaseView {
 		TypedArray ta=context.obtainStyledAttributes(attrs,R.styleable.RainSnow);
 		num=ta.getInteger(R.styleable.RainSnow_num, 10);
 		size=ta.getInteger(R.styleable.RainSnow_size, 10);
-		rainOrSnow=ta.getBoolean(R.styleable.RainSnow_rainOrsnow, true);//Ĭ������
+		rainOrSnow=ta.getBoolean(R.styleable.RainSnow_rainOrsnow, true);
 		ta.recycle();
 	}
+
 	@Override
 	protected void drawSub(Canvas canvas) {
 		for (RainSnowItem item : rainSnowItems) {

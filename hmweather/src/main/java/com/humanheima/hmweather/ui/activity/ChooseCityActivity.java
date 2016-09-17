@@ -19,11 +19,12 @@ import android.widget.Toast;
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
 import com.humanheima.hmweather.bean.CityInfo;
+import com.humanheima.hmweather.bean.WeatherCode;
 import com.humanheima.hmweather.listener.OnItemClickListener;
 import com.humanheima.hmweather.listener.OnLoadMoreListener;
 import com.humanheima.hmweather.ui.adapter.CityRVAdapter;
 import com.humanheima.hmweather.utils.LogUtil;
-import com.humanheima.hmweather.utils.T;
+import com.humanheima.hmweather.utils.RxBus;
 
 import org.litepal.crud.DataSupport;
 
@@ -77,11 +78,16 @@ public class ChooseCityActivity extends BaseActivity {
             cityRVAdapter.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
+                    String code;//天气代码
                     if (cityRVAdapter.getItemCount() < 100) {
-                        T.showToast(ChooseCityActivity.this, tempCityInfoList.get(position).getWeatherId());
+                        //T.showToast(ChooseCityActivity.this, tempCityInfoList.get(position).getWeatherId());
+                        code = tempCityInfoList.get(position).getWeatherId();
                     } else {
-                        T.showToast(ChooseCityActivity.this, cityInfoList.get(position).getWeatherId());
+                        code = cityInfoList.get(position).getWeatherId();
+                        //T.showToast(ChooseCityActivity.this, cityInfoList.get(position).getWeatherId());
                     }
+                    RxBus.getInstance().send(new WeatherCode(code));
+                    ChooseCityActivity.this.finish();
                 }
             });
             recyclerViewCity.setAdapter(cityRVAdapter);

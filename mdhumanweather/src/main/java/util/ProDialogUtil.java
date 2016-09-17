@@ -6,9 +6,7 @@ import android.app.ProgressDialog;
 import com.example.humanweather.R;
 
 /**
- * Õ¹Ê¾½ø¶È¶Ô»°¿ò
- * @author human
- *
+ * å±•ç¤ºè¿›åº¦å¯¹è¯æ¡†
  */
 public class ProDialogUtil {
 
@@ -27,8 +25,9 @@ public class ProDialogUtil {
 		progressDialog.show();
 		return progressDialog;
 	}
+
 	/**
-	 * ¹Ø±Õ½ø¶È¶Ô»°¿ò
+	 * å…³é—­è¿›åº¦å¯¹è¯æ¡†
 	 */
 	public void closeProgressDialog() {
 		if (progressDialog != null) {

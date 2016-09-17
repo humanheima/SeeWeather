@@ -1,15 +1,10 @@
 package com.example.humanweather;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -27,20 +22,14 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import fragment.FragWeather;
 import util.Constants;
-import util.LogUtil;
 import util.NetUtil;
-import util.ScreenUtils;
 import util.ShareWeatherTask;
 import util.ShowImageUtil;
 import util.SnackUtil;
@@ -78,7 +67,6 @@ public class WeatherActivity extends AppCompatActivity implements NavigationView
         //让editor处于可编辑状态
         isFirstEditor = isFirstPref.edit();
         weaidEditor = weaidPref.edit();
-        findViews();
         findViews();
         initData();
         setAdapter();
@@ -157,7 +145,7 @@ public class WeatherActivity extends AppCompatActivity implements NavigationView
                 String curWeaid = curFrag.weaid;
                 String curCitynm = curFrag.citynm;
                 // 查看天气走向
-                Intent featurIntent = new Intent(WeatherActivity.this, FeatureWeatherActivity.class);
+                Intent featurIntent = new Intent(WeatherActivity.this, MdFeaWeaActivity.class);
                 featurIntent.putExtra(Constants.ARG_WEAID, curWeaid);
                 featurIntent.putExtra(Constants.ARG_CITYNM, curCitynm);
                 startActivity(featurIntent);
@@ -261,14 +249,14 @@ public class WeatherActivity extends AppCompatActivity implements NavigationView
             deleteCurFrag();
             SnackUtil.SnackShort(actLinLayout, R.string.delete_success);
 
-        } else if (id == R.id.nav_slideshow) {
+        } /*else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
         } else if (id == R.id.nav_send) {
 
-        }
+        }*/
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

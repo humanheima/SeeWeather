@@ -20,7 +20,10 @@ public class SnackUtil {
      * @param message
      */
     public static void SnackShort(View view, CharSequence message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+        if (view != null) {
+            Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+        }
+
     }
 
     /**
@@ -30,7 +33,10 @@ public class SnackUtil {
      * @param message
      */
     public static void SnackShort(View view, int message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+        if (view != null) {
+            Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+        }
+
     }
 
     /**
@@ -40,7 +46,9 @@ public class SnackUtil {
      * @param message
      */
     public static void SnackLong(View view, CharSequence message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+        if (view != null) {
+            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -50,6 +58,8 @@ public class SnackUtil {
      * @param message
      */
     public static void SnackLong(View view, int message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+        if (view != null) {
+            Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+        }
     }
 }

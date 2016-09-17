@@ -11,62 +11,152 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.example.humanweather.MyApp;
+import com.example.humanweather.R;
 
+import util.Constants;
 import view.RainSnowView;
 
 public class BaseFragment extends Fragment implements OnClickListener {
+    public String rainSnow;
+    public SharedPreferences pref;
+    public SharedPreferences.Editor editor;
 
-	public static String ZHENYU="ÕóÓê",ZHENXUE="ÕóÑ©",RAIN_SNOW="Óê¼ĞÑ©", RAIN = "Óê", SNOW = "Ñ©",MIN_RAIN = "Ğ¡Óê", MID_RAIN = "ÖĞÓê", MAX_RAIN = "´óÓê",SUPER_RAIN = "±©Óê", MIN_SNOW = "Ğ¡Ñ©", MID_SNOW = "ÖĞÑ©",MAX_SNOW = "´óÑ©", SUPER_SNOW = "±©Ñ©";
-	public RainSnowView minRainSnowView;
-	public String rainSnow;
-	public SharedPreferences pref;
-	public SharedPreferences.Editor editor;
-	//public static ConnectivityManager cm;// ÓÃÓÚÅĞ¶ÏÍøÂçÊÇ·ñ¿ÉÓÃ
-	//public static NetworkInfo info;
+    /**
+     * åˆ›å»ºfragmentçš„æ—¶å€™ï¼Œç³»ç»Ÿä¼šè°ƒç”¨æ­¤æ–¹æ³•ï¼Œåœ¨å®ç°ä»£ç ä¸­ï¼Œåº”è¯¥åˆå§‹åŒ–æƒ³åœ¨fragmentä¸­ä¿æŒçš„å¿…è¦ç»„ä»¶ï¼Œ
+     * å½“fragmentè¢«æš‚åœæˆ–è€…åœæ­¢çš„åå¯ä»¥æ¢å¤
+     *
+     * @param savedInstanceState
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        pref = PreferenceManager.getDefaultSharedPreferences(MyApp.getContex());
+        editor = pref.edit();
+    }
+    /**
+     * fragmentç¬¬ä¸€æ¬¡ç»˜åˆ¶ç•Œé¢çš„äº‹åè°ƒç”¨
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
 
-	/**
-	 * µ±´´½¨fragmentÊ±, ÏµÍ³µ÷ÓÃ´Ë·½·¨. ÔÚÊµÏÖ´úÂëÖĞ, Ó¦µ±³õÊ¼»¯ÏëÒªÔÚfragmentÖĞ±£³ÖµÄ±ØÒª×é¼ş,
-	 * µ±fragment±»ÔİÍ£»òÕßÍ£Ö¹ºó¿ÉÒÔ»Ö¸´.
-	 */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		//cm = (ConnectivityManager) MyApp.getContex().getSystemService(Context.CONNECTIVITY_SERVICE);
-		//info = cm.getActiveNetworkInfo();
-		pref = PreferenceManager.getDefaultSharedPreferences(MyApp.getContex());
-		editor = pref.edit();
-	}
+    /**
+     * ç”¨æˆ·å°†è¦ç¦»å¼€fragmentæ—¶ï¼Œç³»ç»Ÿè°ƒç”¨è¿™ä¸ªæ–¹æ³•ä½œä¸ºç¬¬ä¸€ä¸ªæŒ‡ç¤ºï¼ˆç„¶è€Œå®ƒä¸æ€»æ˜¯æ„å‘³ç€fragmentå°†è¢«é”€æ¯ï¼‰ï¼Œåœ¨ç”¨æˆ·ç»“æŸ
+     * ä¼šè¯çš„æ—¶å€™ï¼Œé€šå¸¸åœ¨è¿™é‡Œæäº¤ä»»ä½•åº”è¯¥æŒä¹…åŒ–çš„å˜åŒ–ï¼ˆå› ä¸ºç”¨æˆ·æœ‰å¯èƒ½ä¸ä¼šè¿”å›ï¼‰
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
 
-	/**
-	 * fragmentµÚÒ»´Î»æÖÆËüµÄÓÃ»§½çÃæµÄÊ±ºò, ÏµÍ³»áµ÷ÓÃ´Ë·½·¨.
-	 */
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		return super.onCreateView(inflater, container, savedInstanceState);
-	}
-	/**
-	 * ÓÃ»§½«ÒªÀë¿ªfragmentÊ±,ÏµÍ³µ÷ÓÃÕâ¸ö·½·¨×÷ÎªµÚÒ»¸öÖ¸Ê¾(È»¶øËü²»×ÜÊÇÒâÎ¶×Åfragment½«±»Ïú»Ù.) ÔÚµ±Ç°ÓÃ»§»á»°½áÊøÖ®Ç°,
-	 * Í¨³£Ó¦µ±ÔÚÕâÀïÌá½»ÈÎºÎÓ¦¸Ã³Ö¾Ã»¯µÄ±ä»¯(ÒòÎªÓÃ»§ÓĞ¿ÉÄÜ²»»á·µ»Ø).
-	 */
-	@Override
-	public void onPause() {
-		super.onPause();
-	}
+    /**
+     * å…ˆåˆ¤æ–­æ˜¯å¦åŒ…å«é›¨æˆ–è€…é›ªï¼Œå¦‚æœä¸åŒ…å«å°±ç›´æ¥returnï¼Œå¦åˆ™å†è¿›è¡Œæ“ä½œï¼Œ20å¤§é›ªï¼Œ15ä¸­é›ªï¼Œ10å°é›ª 27 å¤§é›¨ï¼Œ18 ä¸­é›¨ï¼Œ9å°é›¨
+     * true ä¸‹é›¨
+     * false ä¸‹é›ª
+     *
+     * @param viewGroup
+     * @param rainSnow
+     */
+    public void rainOrSnow(ViewGroup viewGroup, String rainSnow) {
+        if (!(rainSnow.contains(Constants.YU) | rainSnow.contains(Constants.XUE))) {
+            return;
+        } else {
+            ViewGroup newView = (ViewGroup) getActivity().getLayoutInflater().inflate(R.layout.rain_snow, viewGroup, false);
+            RainSnowView rainSnowView = (RainSnowView) newView.findViewById(R.id.rainSnowView);
+            if (Constants.XIAOYU.equals(rainSnow) || Constants.ZHENYU.equals(rainSnow)) {
+                rainSnowView.setNumAndSize(15, 9);
+                rainSnowView.setRainOrSnow(true);
+            } else if (Constants.ZHONGYU.equals(rainSnow) || Constants.XIAOYU_ZHONGYU.equals(rainSnow)) {
+                rainSnowView.setNumAndSize(25, 18);
+                rainSnowView.setRainOrSnow(true);
+            } else if (Constants.DAYU.equals(rainSnow) || Constants.ZHONGYU_DAYUE.equals(rainSnow)) {
+                rainSnowView.setNumAndSize(35, 27);
+                rainSnowView.setRainOrSnow(true);
+            } else if (Constants.BAOYU.equals(rainSnow) || Constants.DAYU_BAOYU.equals(rainSnow) || Constants.BAOYU_DABAOYU.equals(rainSnow)) {
+                rainSnowView.setNumAndSize(45, 27);
+                rainSnowView.setRainOrSnow(true);
+            } else if (Constants.XIAOXUE.equals(rainSnow) || Constants.ZHENXUE.equals(rainSnow)) {
+                rainSnowView.setNumAndSize(15, 9);
+                rainSnowView.setRainOrSnow(false);
+            } else if (Constants.ZHONGXUE.equals(rainSnow) || Constants.XIAOXUE_ZHONGXUE.equals(rainSnow)) {
+                rainSnowView.setNumAndSize(25, 15);
+                rainSnowView.setRainOrSnow(false);
+            } else if (Constants.DAXUE.equals(rainSnow) || Constants.ZHONGXUE_DAXUE.equals(rainSnow)) {
+                rainSnowView.setNumAndSize(35, 20);
+                rainSnowView.setRainOrSnow(false);
+            } else if (Constants.BAOXUE.equals(rainSnow) || Constants.DAXUE_BAOXUE.equals(rainSnow)) {
+                rainSnowView.setNumAndSize(45, 20);
+                rainSnowView.setRainOrSnow(false);
+            } else if (Constants.YUJIAXUE.equals(rainSnow)) {
+                rainSnowView.setNumAndSize(15, 15);
+                rainSnowView.setRainOrSnow(false);
+            }
+            viewGroup.addView(newView, 0);
+        }
+    }
+/*
 
-	/**
-	 * ÏÈÅĞ¶ÏÊÇ·ñ°üº¬Óê»òÕßÑ©£¬Èç¹û²»°üº¬Ö±½Óreturn£¬·ñÔòÔÙ½øĞĞ²Ù×÷ 20´óÑ©,£¬15ÖĞÑ©£¬10Ğ¡Ñ© 27´óÓê£¬18 ÖĞÓê £¬9Ğ¡Óê
-	 * true ÏÂÓê
-	 * falseÏÂÑ©
-	 * @param rainSnow
-	 */
+    */
+
+    /**
+     * å…ˆåˆ¤æ–­æ˜¯å¦åŒ…å«é›¨æˆ–è€…é›ªï¼Œå¦‚æœä¸åŒ…å«å°±ç›´æ¥returnï¼Œå¦åˆ™å†è¿›è¡Œæ“ä½œï¼Œ20å¤§é›ªï¼Œ15ä¸­é›ªï¼Œ10å°é›ª 27 å¤§é›¨ï¼Œ18 ä¸­é›¨ï¼Œ9å°é›¨
+     * true ä¸‹é›¨
+     * false ä¸‹é›ª
+     *
+     * @param rtLayout
+     * @param rainSnow
+     *//*
+
 	public void rainOrSnow(RelativeLayout rtLayout, String rainSnow) {
-		if (!(rainSnow.contains(RAIN)|rainSnow.contains(SNOW))) {
+		if (!(rainSnow.contains(Constants.YU)|rainSnow.contains(Constants.XUE))) {
 			return;
 		} else {
-
-		 if (MIN_RAIN.equals(rainSnow)||ZHENYU.equals(rainSnow)) {
+			if (Constants.XIAOXUE.equals(rainSnow)||Constants.ZHENXUE.equals(rainSnow)) {
 				rtLayout.removeView(minRainSnowView);
+				minRainSnowView = new RainSnowView(MyApp.getContex(), true,15, 9);
+				rtLayout.addView(minRainSnowView);
+			} else if (Constants.ZHONGYU.equals(rainSnow)||Constants.XIAOYU_ZHONGYU.equals(rainSnow)) {
+				rtLayout.removeView(minRainSnowView);
+				minRainSnowView = new RainSnowView(MyApp.getContex(), true,25, 18);
+				rtLayout.addView(minRainSnowView);
+			} else if (Constants.DAYU.equals(rainSnow)||Constants.ZHONGYU_DAYUE.equals(rainSnow)) {
+				rtLayout.removeView(minRainSnowView);
+				minRainSnowView = new RainSnowView(MyApp.getContex(), true,35, 27);
+				rtLayout.addView(minRainSnowView);
+			}else if (Constants.BAOYU.equals(rainSnow)||Constants.DAYU_BAOYU.equals(rainSnow)||Constants.BAOYU_DABAOYU.equals(rainSnow)) {
+				rtLayout.removeView(minRainSnowView);
+				minRainSnowView = new RainSnowView(MyApp.getContex(), true,45, 27);
+				rtLayout.addView(minRainSnowView);
+			}else if (Constants.XIAOXUE.equals(rainSnow)||Constants.ZHENXUE.equals(rainSnow)) {
+				rtLayout.removeView(minRainSnowView);
+				minRainSnowView = new RainSnowView(MyApp.getContex(), false,15, 9);
+				rtLayout.addView(minRainSnowView);
+			} else if (Constants.ZHONGXUE.equals(rainSnow)||Constants.XIAOXUE_ZHONGXUE.equals(rainSnow)) {
+				rtLayout.removeView(minRainSnowView);
+				minRainSnowView = new RainSnowView(MyApp.getContex(), false,25, 15);
+				rtLayout.addView(minRainSnowView);
+			}else if (Constants.DAXUE.equals(rainSnow)||Constants.ZHONGXUE_DAXUE.equals(rainSnow)) {
+				rtLayout.removeView(minRainSnowView);
+				minRainSnowView = new RainSnowView(MyApp.getContex(), false,35, 20);
+				rtLayout.addView(minRainSnowView);
+			}else if (Constants.BAOXUE.equals(rainSnow)||Constants.DAXUE_BAOXUE.equals(rainSnow)) {
+				rtLayout.removeView(minRainSnowView);
+				minRainSnowView = new RainSnowView(MyApp.getContex(), false,45, 20);
+				rtLayout.addView(minRainSnowView);
+			}else if (Constants.YUJIAXUE.equals(rainSnow)) {
+				rtLayout.removeView(minRainSnowView);
+				minRainSnowView = new RainSnowView(MyApp.getContex(), false,15, 15);
+				rtLayout.addView(minRainSnowView);
+			}
+		*/
+/* if (MIN_RAIN.equals(rainSnow)||ZHENYU.equals(rainSnow)) {
+                rtLayout.removeView(minRainSnowView);
 				minRainSnowView = new RainSnowView(MyApp.getContex(), true,15, 9);
 				rtLayout.addView(minRainSnowView);
 			} else if (MID_RAIN.equals(rainSnow)) {
@@ -101,11 +191,12 @@ public class BaseFragment extends Fragment implements OnClickListener {
 				rtLayout.removeView(minRainSnowView);
 				minRainSnowView = new RainSnowView(MyApp.getContex(), false,15, 15);
 				rtLayout.addView(minRainSnowView);
-			}
+			}*//*
+
 		}
 	}
-
-	@Override
-	public void onClick(View view) {
-	}
+*/
+    @Override
+    public void onClick(View view) {
+    }
 }

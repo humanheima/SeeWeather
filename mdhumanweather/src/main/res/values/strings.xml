@@ -6,10 +6,12 @@
     <string name="press_again">再按一次退出程序</string>
     <string name="update_success">更新成功</string>
     <string name="update_failed">更新失败</string>
+    <string name="update_exception">更新异常</string>
     <string name="net_error">请检查网络连接</string>
     <string name="wait">请稍候...</string>
     <string name="cancel">取消</string>
-    <string name="app_name">天气</string>
+    <string name="app_name">知秋天气</string>
+    <string name="app_describe">一叶落知天下秋</string>
     <string name="add">添加城市</string>
     <string name="delete">删除城市</string>
     <string name="delete_success">删除成功</string>
@@ -25,6 +27,7 @@
     <string name="wind">风力</string>
     <string name="winp">风向</string>
     <string name="city">城市</string>
+    <string name="choose_city">选择城市</string>
     <string name="findcity">搜索城市</string>
     <string name="loccity">定位城市</string>
     <string name="loc_failed">定位失败</string>

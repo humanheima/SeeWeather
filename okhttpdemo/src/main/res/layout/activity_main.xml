@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btnGet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="一般的get请求" />
+
+    <Button
+        android:id="@+id/btnPost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="一般的post请求" />
+
+    <Button
+        android:id="@+id/btnFilePost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="基于Http的文件上传" />
+
+    <Button
+        android:id="@+id/btnFileDownLoad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="文件下载" />
+
+    <Button
+        android:id="@+id/btnLoadImg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="加载图片" />
+
+    <Button
+        android:id="@+id/btnSupportCallBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="支持请求回调，直接返回对象、对象集合" />
+
+    <Button
+        android:id="@+id/btnSupportSession"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="支持session的保持" />
+</LinearLayout>

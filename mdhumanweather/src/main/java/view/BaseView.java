@@ -8,27 +8,39 @@ import android.view.View;
 public abstract class BaseView extends View {
 
 	private MyThread myThread;
-	public int num;//Óêµã»òÑ©»¨µÄÊıÁ¿
-	public int size;//Óêµã»òÕßÑ©»¨µÄ´óĞ¡
-	public boolean rainOrSnow;//ÏÂÓê»¹ÊÇÏÂÑ©
+	public int num;//é›¨ç‚¹æˆ–è€…é›ªèŠ±çš„æ•°é‡
+	public int size;//é›¨ç‚¹æˆ–è€…é›ªèŠ±çš„å¤§å°
+	public boolean rainOrSnow;//ä¸‹é›¨è¿˜æ˜¯ä¸‹é›ª
+
 	/**
-	 * ÉèÖÃÓêµã»òÕßÑ©»¨µÄÊıÁ¿
+	 * è®¾ç½®é›¨ç‚¹æˆ–è€…é›ªèŠ±çš„æ•°é‡
 	 * @param num
-	 */
+     */
 	public void setNum(int num) {
 		this.num = num;
 	}
-/**
- * ÉèÖÃÓêµã»òÕßÑ©»¨µÄ´óĞ¡
- * @param size
- */
+
+	/**
+	 * è®¾ç½®é›¨ç‚¹æˆ–è€…é›ªèŠ±çš„å¤§å°
+	 * @param size
+     */
 	public void setSize(int size) {
 		this.size = size;
 	}
-/**
- * ÉèÖÃÏÂÑ©»¹ÊÇÏÂÓê£¬true±íÊ¾ÏÂÓê£¬false±íÊ¾ÏÂÑ©
- * @param rainOrSnow
- */
+
+	/**
+	 * åŒæ—¶è®¾ç½®é›¨ç‚¹æˆ–è€…é›ªèŠ±çš„å¤§å°å’Œæ•°é‡
+	 * @param num
+	 * @param size
+     */
+	public void setNumAndSize(int num,int size){
+		this.num=num;
+		this.size=size;
+	}
+	/**
+	 * è®¾ç½®ä¸‹é›¨è¿˜æ˜¯ä¸‹é›ªï¼Œtrueè¡¨ç¤ºä¸‹é›¨ï¼Œfalseè¡¨ç¤ºä¸‹é›ª
+	 * @param rainOrSnow
+     */
 	public void setRainOrSnow(boolean rainOrSnow) {
 		this.rainOrSnow = rainOrSnow;
 	}
@@ -59,9 +71,9 @@ public abstract class BaseView extends View {
 	protected abstract void init();
 	
 	private boolean running=true;
-	
+
 	/**
-	 * ÅĞ¶ÏviewÊÇ·ñÀë¿ªÆÁÄ»
+	 * åˆ¤æ–­viewæ˜¯å¦ç¦»å¼€äº†å±å¹•
 	 */
 	@Override
 	protected void onDetachedFromWindow() {

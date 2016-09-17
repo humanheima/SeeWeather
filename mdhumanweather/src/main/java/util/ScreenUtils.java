@@ -9,13 +9,12 @@ import android.view.View;
 import android.view.WindowManager;
 
 /**
- * ½ØÍ¼µÄ°ïÖúÀà
- * @author dumingwei
- *
+ * æˆªå–å±å¹•çš„å·¥å…·ç±»
  */
 public class ScreenUtils {
-	 /**
-     * »ñÈ¡µ±Ç°ÆÁÄ»½ØÍ¼£¬°üº¬×´Ì¬À¸
+
+    /**
+     * æˆªå–æœ‰çŠ¶æ€æ çš„å›¾ç‰‡
      * @param activity
      * @return
      */
@@ -31,8 +30,8 @@ public class ScreenUtils {
         view.destroyDrawingCache();
         return bp;
     }
- /**
-     * »ñÈ¡µ±Ç°ÆÁÄ»½ØÍ¼£¬²»°üº¬×´Ì¬À¸
+    /**
+     * æˆªå–æ²¡æœ‰çŠ¶æ€æ çš„å›¾ç‰‡
      * @param activity
      * @return
      */
@@ -53,7 +52,7 @@ public class ScreenUtils {
     }
 
     /**
-     * »ñµÃÆÁÄ»¸ß¶È
+     * å¾—åˆ°å±å¹•çš„å®½åº¦
      * @param context
      * @return
      */
@@ -67,7 +66,7 @@ public class ScreenUtils {
     }
 
     /**
-     * »ñµÃÆÁÄ»¿í¶È
+     * å¾—åˆ°å±å¹•çš„é«˜åº¦
      * @param context
      * @return
      */
@@ -80,7 +79,7 @@ public class ScreenUtils {
     }
 
     /**
-     * »ñÈ¡×´Ì¬À¸µÄ¸ß¶È
+     * çŠ¶æ€æ çš„é«˜åº¦
      * @param context
      * @return
      */

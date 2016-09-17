@@ -18,20 +18,22 @@ public class NetWork {
 
     public static API getApi() {
         if (api == null) {
-            okHttpClient = new OkHttpClient.Builder()
-                    .retryOnConnectionFailure(true)
-                    .readTimeout(200, TimeUnit.SECONDS)
-                    .writeTimeout(300, TimeUnit.SECONDS)
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .build();
+            synchronized (NetWork.class) {
+                okHttpClient = new OkHttpClient.Builder()
+                        .retryOnConnectionFailure(true)
+                        .readTimeout(200, TimeUnit.SECONDS)
+                        .writeTimeout(300, TimeUnit.SECONDS)
+                        .connectTimeout(30, TimeUnit.SECONDS)
+                        .build();
 
-            Retrofit retrofit = new Retrofit.Builder()
-                    .client(okHttpClient)
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                    .build();
-            api = retrofit.create(API.class);
+                Retrofit retrofit = new Retrofit.Builder()
+                        .client(okHttpClient)
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                        .build();
+                api = retrofit.create(API.class);
+            }
         }
         return api;
     }

@@ -1,6 +1,6 @@
 package model;
 
-/**Î´À´ÌìÆøµÄÄ£ĞÍ
+/**æœªæ¥å¤©æ°”çš„æ¨¡å‹
  * @author dumingwei
  *
  */

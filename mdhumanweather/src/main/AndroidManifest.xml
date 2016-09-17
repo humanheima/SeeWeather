@@ -25,7 +25,7 @@
     <application
         android:name=".MyApp"
         android:allowBackup="true"
-        android:icon="@drawable/city"
+        android:icon="@mipmap/launch_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -50,18 +50,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FeatureWeatherActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustPan" />
-        <activity
             android:name=".MdCityActivity"
-            android:label="@string/title_activity_md_city"
+            android:label="@string/choose_city"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".MdFeaWeaActivity"
-            android:label="@string/title_activity_md_fea_wea"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:label="@string/feature"
+            android:theme="@style/AppTheme.NoActionBar"
+
+            android:parentActivityName=".WeatherActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".WeatherActivity" />
+        </activity>
     </application>
 
 </manifest>

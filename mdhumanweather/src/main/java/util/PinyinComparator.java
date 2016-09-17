@@ -4,12 +4,8 @@ import java.util.Comparator;
 
 import model.WeatherCityModel;
 
-/**ÅÅĞòĞ§¹û²»ÊÇÌ«ºÃÊÇÓĞÔ­ÒòµÄ
- * ÒòÎªÃ¿¸öÊ¡·İµÄµÚÒ»¸öÊĞ¿ªÍ·ÊÇÕâÑùµÄ
- * ±ÈÈç±±¾©³¯ÑôÇø
- * citynm ³¯Ñô cityo bjchaoyang
- * @author human
- *
+/**
+ * æ‹¼éŸ³æ¯”è¾ƒå™¨
  */
 public class PinyinComparator implements Comparator<WeatherCityModel> {
 

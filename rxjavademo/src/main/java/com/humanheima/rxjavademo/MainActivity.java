@@ -1,5 +1,6 @@
 package com.humanheima.rxjavademo;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -9,8 +10,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,12 +25,15 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Action4;
+import rx.functions.Func0;
 import rx.functions.Func1;
+import rx.functions.Func2;
+import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final static String tag = "tag";
+    public final static String tag = "tag";
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
@@ -35,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        //使用rxjava方式实现从欢迎页进入主界面.
+        // delayStartAct();
     }
 
     /**
@@ -550,7 +559,7 @@ public class MainActivity extends AppCompatActivity {
                 .doOnSubscribe(new Action0() {
                     @Override
                     public void call() {
-                        progressBar.setVisibility(View.VISIBLE);//需要在主线程执行
+                        progressBar.setVisibility(View.GONE);//需要在主线程执行
                     }
                 })
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -571,6 +580,334 @@ public class MainActivity extends AppCompatActivity {
                         Log.e(tag, "onNext" + integer);
                     }
                 });
+    }
+
+
+    /**
+     * defer 操作符，just操作符是在创建Observable就进行了赋值操作，而defer是在订阅者订阅时才创建Observable，此时才进行真正的赋值操作
+     */
+
+    //初始的时候的时候i=10，有瑕疵
+    int i = 10;
+
+    public void compareJustAndDefer(View view) {
+        Observable<Integer> justObservable = Observable.just(i);
+        i = 12;
+        Observable<Integer> deferObservable = Observable.defer(new Func0<Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call() {
+                return Observable.just(i);
+            }
+        });
+        i = 15;
+        justObservable.subscribe(new Subscriber<Integer>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                Log.e(tag, "justObservable i=" + i);
+            }
+        });
+        deferObservable.subscribe(new Subscriber<Integer>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                Log.e(tag, "deferObservable i=" + i);
+            }
+        });
+    }
+
+    /**
+     * timer 操作符
+     * app 从欢迎页，2-3秒后自动跳转到主页面
+     */
+    public void delayStartAct() {
+        Observable.timer(2, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
+                .map(new Func1<Long, Object>() {
+                    @Override
+                    public Object call(Long aLong) {
+                        startActivity(new Intent(MainActivity.this, SecondActivity.class));
+                        finish();
+                        return null;
+                    }
+                }).subscribe();
+    }
+
+
+    private Observable<ImageView> loadImgFromLocal() {
+        return null;
+    }
+
+    private Observable<ImageView> loadImgFromNet() {
+        return null;
+    }
+
+    /**
+     * 使用timer操作符,两种用法，一种是延迟产生一个数字就结束，
+     *
+     * @param view
+     */
+    public void useTimer(View view) {
+        //延迟产生一个数字就结束
+      /*  Observable.timer(2, TimeUnit.SECONDS)
+                .subscribe(new Action1<Long>() {
+                    @Override
+                    public void call(Long aLong) {
+                        Log.e(tag, "timer" + aLong);
+                    }
+                });*/
+        /**
+         * interval操作符是每隔一段时间就产生一个数字，这些数字从0开始，一次递增1直至无穷大
+         */
+        Observable.interval(2, 2, TimeUnit.SECONDS, Schedulers.io())
+                .take(5)//最多输出5个
+                .subscribe(new Action1<Long>() {
+                    @Override
+                    public void call(Long aLong) {
+                        Log.e(tag, "timer" + aLong);
+                    }
+                });
+    }
+
+    /**
+     * range操作符
+     * <p>
+     * range操作符是创建一组在从n开始，个数为m的连续数字，比如range(3,10)，就是创建3、4、5…12的一组数字，
+     *
+     * @param view
+     */
+    public void useRange(View view) {
+        Observable.range(3, 10, Schedulers.io())
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        Log.e(tag, "timer" + integer);
+                    }
+                });
+    }
+
+    /**
+     * 使用repeat 和repeatWhen操作符
+     *
+     * @param view
+     */
+    public void useRepeat(View view) {
+       /* Observable.range(3, 3).repeat(2).subscribe(new Action1<Integer>() {
+            @Override
+            public void call(Integer integer) {
+                Log.e(tag, "timer" + integer);
+            }
+        });*/
+
+        Observable.range(3, 3).repeatWhen(new Func1<Observable<? extends Void>, Observable<?>>() {
+            @Override
+            public Observable<?> call(Observable<? extends Void> observable) {
+                return observable.zipWith(Observable.range(1, 3), new Func2<Void, Integer, Integer>() {
+                    @Override
+                    public Integer call(Void aVoid, Integer integer) {
+                        return integer;
+                    }
+                }).flatMap(new Func1<Integer, Observable<?>>() {
+                    @Override
+                    public Observable<?> call(Integer integer) {
+                        Log.e(tag, "delay repeat the " + integer + " count");
+                        //1秒钟重复一次
+                        return Observable.timer(1, TimeUnit.SECONDS);
+                    }
+                });
+            }
+        }).subscribe(new Subscriber<Integer>() {
+            @Override
+            public void onCompleted() {
+                Log.e(tag, "onCompleted");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                Log.e(tag, "onNext" + integer);
+            }
+        });
+    }
+
+    /**
+     * buffer操作符周期性地收集源Observable产生的结果到列表中，并把这个列表提交给订阅者，
+     * 订阅者处理后，清空buffer列表，同时接收下一次收集的结果并提交给订阅者，周而复始。
+     */
+    public void useBuffer(View view) {
+//定义邮件内容
+        final String[] mails = new String[]{"Here is an email!", "Another email!", "Yet another email!"};
+        //每隔1秒就随机发布一封邮件
+        Observable<String> endlessMail = Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+                if (subscriber.isUnsubscribed()) {
+                    return;
+                }
+                Random ran = new Random();
+                while (true) {
+                    String mail = mails[ran.nextInt(mails.length)];
+                    subscriber.onNext(mail);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        subscriber.onError(e);
+                    }
+                }
+
+            }
+        }).subscribeOn(Schedulers.io());
+        //把上面产生的邮件内容缓存到列表中，并每隔3秒通知订阅者
+        endlessMail.buffer(3, TimeUnit.SECONDS)
+                .subscribe(new Action1<List<String>>() {
+                    @Override
+                    public void call(List<String> list) {
+                        Log.e(tag, String.format("You've got %d new messages!  Here they are!", list.size()));
+                        for (int i = 0; i < list.size(); i++)
+                            Log.e(tag, "**" + list.get(i).toString());
+                    }
+                });
+    }
+
+    /**
+     * concatMap操作符
+     * cancatMap操作符与flatMap操作符类似，都是把Observable产生的结果转换成多个Observable，
+     * 然后把这多个Observable“扁平化”成一个Observable，并依次提交产生的结果给订阅者。
+     * 与flatMap操作符不同的是，concatMap操作符在处理产生的Observable时，
+     * 采用的是“连接(concat)”的方式，而不是“合并(merge)”的方式，这就能保证产生结果的顺序性，
+     * 也就是说提交给订阅者的结果是按照顺序提交的，不会存在交叉的情况。
+     *
+     * @param f
+     * @return
+     */
+    private Observable<File> listFiles(File f) {
+       /* if (f.isDirectory()) {
+            return Observable.from(f.listFiles())
+                    .flatMap(new Func1<File, Observable<File>>() {
+                        @Override
+                        public Observable<File> call(File file) {
+                            return listFiles(file);
+                        }
+                    });
+        } else {
+            return Observable.just(f);
+        }*/
+        if (f.isDirectory()) {
+            return Observable.from(f.listFiles()).concatMap(new Func1<File, Observable<? extends File>>() {
+                @Override
+                public Observable<? extends File> call(File file) {
+                    return listFiles(file);
+                }
+            });
+        } else {
+            return Observable.just(f);
+        }
+    }
+
+    public void groupBy(View view) {
+        Observable.interval(1, TimeUnit.SECONDS).take(10).groupBy(new Func1<Long, Long>() {
+            @Override
+            public Long call(Long aLong) {
+                return aLong % 3;
+            }
+        }).subscribe(new Action1<GroupedObservable<Long, Long>>() {
+            @Override
+            public void call(final GroupedObservable<Long, Long> result) {
+                result.subscribe(new Action1<Long>() {
+                    @Override
+                    public void call(Long value) {
+                        Log.e(tag, "key:" + result.getKey() + ", value:" + value);
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * cast操作符
+     * cast操作符类似于map操作符，不同的地方在于map操作符可以通过自定义规则，
+     * 把一个值A1变成另一个值A2，A1和A2的类型可以一样也可以不一样；
+     * 而cast操作符主要是做类型转换的，传入参数为类型class，
+     * 如果源Observable产生的结果不能转成指定的class，则会抛出ClassCastException运行时异常。
+     *
+     * @param view
+     */
+    public void useCast(View view) {
+        Observable.just(1, 2).cast(Integer.class).subscribe(new Action1<Integer>() {
+            @Override
+            public void call(Integer integer) {
+
+            }
+        });
+    }
+
+    /**
+     * scan操作符
+     * scan操作符通过遍历源Observable产生的结果，
+     * 依次对每一个结果项按照指定规则进行运算，
+     * 计算后的结果作为下一个迭代项参数，每一次迭代项都会把计算结果输出给订阅者。
+     *
+     * @param view
+     */
+    public void useScan(View view) {
+        Observable.just(1, 2, 3, 4, 5)
+                .scan(new Func2<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer call(Integer sum, Integer item) {
+                        //参数sum就是上一次的计算结果
+                        return sum + item;
+                    }
+                }).subscribe(new Action1<Integer>() {
+            @Override
+            public void call(Integer integer) {
+                Log.e(tag, "Next: " + integer);
+            }
+        });
+    }
+
+    public void useWindow(View view) {
+        Observable.interval(1, TimeUnit.SECONDS)
+                .take(12)
+                .window(3, TimeUnit.SECONDS)
+                .subscribe(new Action1<Observable<Long>>() {
+                    @Override
+                    public void call(Observable<Long> observable) {
+                        Log.e(tag, "subdivide begin......");
+                        observable.subscribe(new Action1<Long>() {
+                            @Override
+                            public void call(Long aLong) {
+                                Log.e(tag, "Next:" + aLong);
+                            }
+                        });
+                    }
+                });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }
 
