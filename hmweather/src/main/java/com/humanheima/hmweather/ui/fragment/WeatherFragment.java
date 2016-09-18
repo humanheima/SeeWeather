@@ -113,14 +113,16 @@ public class WeatherFragment extends BaseFragment {
     }
 
     private void setAdapter() {
-        if (adapter == null) {
+        /*if (adapter == null) {
             adapter = new WeatherRVAdapter(getContext(), mWeatherBean);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             recyclerView.setAdapter(adapter);
         } else {
             adapter.notifyDataSetChanged();
-        }
-
+        }*/
+        adapter = new WeatherRVAdapter(getContext(), mWeatherBean);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
     }
 
 

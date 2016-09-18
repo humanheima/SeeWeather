@@ -40,4 +40,14 @@ public class SPUtil {
     public int getInt(String key) {
         return hmSpref.getInt(key, R.mipmap.none);
     }
+
+    public void putBoolan(String key, Boolean value) {
+        editor.putBoolean(key, value);
+        editor.apply();
+    }
+
+    public boolean getBoolean(String key) {
+        return hmSpref.getBoolean(key, false);
+    }
+
 }

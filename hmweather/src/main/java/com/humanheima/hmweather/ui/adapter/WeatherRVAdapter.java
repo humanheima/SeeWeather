@@ -48,6 +48,14 @@ public class WeatherRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         dailyForecastList = heWeather.getDaily_forecast();
     }
 
+    /*public WeatherRVAdapter(Context context, WeatherBean weatherBean) {
+        this.context = context;
+        this.weatherBean = weatherBean;
+        heWeather = this.weatherBean.getWeatherList().get(0);
+        hourlyForecastList = heWeather.getHourly_forecast();
+        dailyForecastList = heWeather.getDaily_forecast();
+    }*/
+
     @Override
     public int getItemViewType(int position) {
         if (position == TYPE_ONE) {
@@ -233,7 +241,7 @@ public class WeatherRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 travelTxt.setText(weather.getSuggestion().getTrav().getTxt());
 
                 fluBrief.setText(String.format("感冒指数---%s", weather.getSuggestion().getFlu().getBrf()));
-                fluTxt.setText(weather.getSuggestion().getFlu().getBrf());
+                fluTxt.setText(weather.getSuggestion().getFlu().getTxt());
             } catch (Exception e) {
                 LogUtil.e("SuggestionViewHolder", e.toString());
             }

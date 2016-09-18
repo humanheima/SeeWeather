@@ -905,6 +905,328 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * debounce操作符对源Observable每产生一个结果后，如果在规定的间隔时间内没有别的结果产生，
+     * 则把这个结果提交给订阅者处理，否则忽略该结果。
+     * <p>
+     * 值得注意的是，如果源Observable产生的最后一个结果后在规定的时间间隔内调用了onCompleted
+     * ，那么通过debounce操作符也会把这个结果提交给订阅者。
+     *
+     * @param view
+     */
+    public void debounce(View view) {
+        Observable.create(new Observable.OnSubscribe<Integer>() {
+            @Override
+            public void call(Subscriber<? super Integer> subscriber) {
+                if (subscriber.isUnsubscribed()) return;
+
+                try {
+                    for (int i = 1; i < 10; i++) {
+                        subscriber.onNext(i);
+                        Thread.sleep(i * 100);
+                    }
+                    subscriber.onCompleted();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    subscriber.onError(e);
+                }
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .debounce(400, TimeUnit.MILLISECONDS)
+                .subscribe(new Subscriber<Integer>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.e(tag, "completed!");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+                        Log.e(tag, "Next:" + integer);
+                    }
+                });
+    }
+
+    /**
+     * distinct操作符对源Observable产生的结果进行过滤，把重复的结果过滤掉，只输出不重复的结果给订阅者
+     *
+     * @param view
+     */
+    public void distinct(View view) {
+        Observable.just(1, 1, 22, 3, 3, 4)
+                .distinct()
+                .subscribe(new Subscriber<Integer>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.e(tag, "completed!");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+                        //输出1,22,3,4
+                        Log.e(tag, "Next:" + integer);
+                    }
+                });
+    }
+
+    /**
+     * lementAt操作符在源Observable产生的结果中，仅仅把指定索引的结果提交给订阅者
+     *
+     * @param view
+     */
+    public void elementAt(View view) {
+        Observable.just(1, 2, 3, 4, 5)
+                .elementAt(2)
+                .subscribe(new Subscriber<Integer>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.e(tag, "completed!");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+                        //输出3
+                        Log.e(tag, "elementAt Next:" + integer);
+                    }
+                });
+    }
+
+    /**
+     * filter操作符是对源Observable产生的结果按照指定条件进行过滤，
+     * 只有满足条件的结果才会提交给订阅者
+     *
+     * @param view
+     */
+    public void filter(View view) {
+        Observable.just(1, 2, 3, 4, 5)
+                .filter(new Func1<Integer, Boolean>() {
+                    @Override
+                    public Boolean call(Integer integer) {
+                        return integer < 4;
+                    }
+                })
+                .subscribe(new Subscriber<Integer>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.e(tag, "completed!");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+                        //只输出1,2,3,
+                        Log.e(tag, "filter Next:" + integer);
+                    }
+                });
+    }
+
+    /**
+     * ofType操作符类似于filter操作符，区别在于ofType操作符是按照类型对结果进行过滤
+     *
+     * @param view
+     */
+    public void ofType(View view) {
+        Observable.just("hello", 2F, 3L, true, 'c')
+                .ofType(Float.class)
+                .subscribe(new Subscriber<Float>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.e(tag, "ofType onCompleted:");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Float aFloat) {
+                        Log.e(tag, "ofType Next:" + aFloat);
+                    }
+                });
+    }
+
+    /**
+     * single操作符是对源Observable的结果进行判断，如果产生的结果满足指定条件的数量不为1(有且只有一个)
+     * ，则抛出异常，否则把满足条件的结果提交给订阅者，
+     *
+     * @param view
+     */
+    public void single(View view) {
+        Observable.just(1, 2, 3, 4, 5)
+                .single(new Func1<Integer, Boolean>() {
+                    @Override
+                    public Boolean call(Integer integer) {
+                        return integer > 3;
+                    }
+                }).subscribe(new Subscriber<Integer>() {
+            @Override
+            public void onCompleted() {
+                Log.e(tag, "single onCompleted:");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(tag, "single onError:" + e.getMessage());
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                Log.e(tag, "single Next:" + integer);
+            }
+        });
+    }
+
+    /**
+     * ignoreElements操作符
+     * ignoreElements操作符忽略所有源Observable产生的结果，只把Observable的onCompleted和onError事件通知给订阅者。
+     * ignoreElements操作符适用于不太关心Observable产生的结果，
+     * 只是在Observable结束时(onCompleted)或者出现错误时能够收到通知。
+     *
+     * @param view
+     */
+    public void ignoreElements(View view) {
+        Observable.just(1, 2, 3, 4, 5)
+                .ignoreElements()
+                .subscribe(new Subscriber<Integer>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.e(tag, "Sequence complete.");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+                        Log.e(tag, "ignoreElements Next:" + integer);
+                    }
+                });
+    }
+
+    /**
+     * skip操作符
+     * skip操作符针对源Observable产生的结果，跳过前面n个不进行处理，而把后面的结果提交给订阅者处理
+     * 运行结果
+     * Next: 4
+     * Next: 5
+     * Next: 6
+     * Next: 7
+     * Sequence complete.
+     * skipLast操作符
+     * skipLast操作符针对源Observable产生的结果，忽略Observable最后产生的n个结果，而把前面产生的结果提交给订阅者处理，
+     * 值得注意的是，skipLast操作符提交满足条件的结果给订阅者是存在延迟效果的
+     */
+
+    public void skip(View view) {
+        Observable.just(1, 2, 3, 4, 5, 6, 7).skip(3)
+                .subscribe(new Subscriber<Integer>() {
+                    @Override
+                    public void onNext(Integer item) {
+                        System.out.println("Next: " + item);
+                    }
+
+                    @Override
+                    public void onError(Throwable error) {
+                        System.err.println("Error: " + error.getMessage());
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        System.out.println("Sequence complete.");
+                    }
+                });
+
+    }
+
+    public void combineLatest(View view) {
+        //产生0,5,10,15,20数列
+        Observable<Long> observable1 = Observable.interval(0, 1000, TimeUnit.MILLISECONDS)
+                .map(new Func1<Long, Long>() {
+                    @Override
+                    public Long call(Long aLong) {
+                        return aLong * 5;
+                    }
+                }).take(5);
+
+        //产生0,10,20,30,40数列
+        Observable<Long> observable2 = Observable.interval(500, 1000, TimeUnit.MILLISECONDS)
+                .map(new Func1<Long, Long>() {
+                    @Override
+                    public Long call(Long aLong) {
+                        return aLong * 10;
+                    }
+                }).take(5);
+        Observable.combineLatest(observable1, observable2, new Func2<Long, Long, Long>() {
+            @Override
+            public Long call(Long aLong, Long aLong2) {
+                return aLong + aLong2;
+            }
+        }).subscribe(new Subscriber<Long>() {
+            @Override
+            public void onCompleted() {
+                Log.e(tag, "Sequence complete.");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(tag, "Error: " + e.getMessage());
+            }
+
+            @Override
+            public void onNext(Long aLong) {
+                Log.e(tag, "Next: " + aLong);
+            }
+        });
+
+    }
+
+    public void zip(View view) {
+        Observable<Integer> observable1 = Observable.just(10, 20, 30);
+        Observable<Integer> observable2 = Observable.just(4, 8, 12, 16);
+        Observable.zip(observable1, observable2, new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer integer, Integer integer2) {
+                return integer + integer2;
+            }
+        }).subscribe(new Subscriber<Integer>() {
+            @Override
+            public void onCompleted() {
+                Log.e(tag, "Sequence complete.");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(tag, "Error: " + e.getMessage());
+            }
+
+            @Override
+            public void onNext(Integer value) {
+                Log.e(tag, "zip Next:" + value);
+            }
+        });
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

@@ -10,81 +10,156 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.humanheima.rxjavademo.MainActivity">
 
-    <Button
-        android:id="@+id/btnFlatMap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="useFlatMap"
-        android:text="使用flatMap方法" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/btnUseCompose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="useCompose"
-        android:text="使用Compose方法" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
 
-    <Button
-        android:id="@+id/btnchangeScheduler"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="changeScheduler"
-        android:text="changeScheduler" />
+            <Button
+                android:id="@+id/btnFlatMap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="useFlatMap"
+                android:text="使用flatMap方法" />
 
-    <Button
-        android:id="@+id/useDoOnSubscribe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="useDoOnSubscribe"
-        android:text="使用DoOnSubscribe方法" />
+            <Button
+                android:id="@+id/btnUseCompose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="useCompose"
+                android:text="使用Compose方法" />
 
-    <Button
-        android:id="@+id/compareJustAndDefer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="compareJustAndDefer"
-        android:text="compareJustAndDefer" />
 
-    <Button
-        android:id="@+id/btnUseTimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="useTimer"
-        android:text="使用timer操作符" />
+            <Button
+                android:id="@+id/btnchangeScheduler"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="changeScheduler"
+                android:text="changeScheduler" />
 
-    <Button
-        android:id="@+id/btnUseRange"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="useRange"
-        android:text="使用range操作符" />
+            <Button
+                android:id="@+id/useDoOnSubscribe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="useDoOnSubscribe"
+                android:text="使用DoOnSubscribe方法" />
 
-    <Button
-        android:id="@+id/btnUseRepeat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="useRepeat"
-        android:text="使用useRepeat操作符" />
+            <Button
+                android:id="@+id/compareJustAndDefer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="compareJustAndDefer"
+                android:text="compareJustAndDefer" />
 
-    <Button
-        android:id="@+id/btnuseBuffer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="useBuffer"
-        android:text="使用Buffer操作符" />
+            <Button
+                android:id="@+id/btnUseTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="useTimer"
+                android:text="使用timer操作符" />
 
-    <Button
-        android:id="@+id/groupBy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="groupBy"
-        android:text="使用groupBy操作符" />
+            <Button
+                android:id="@+id/btnUseRange"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="useRange"
+                android:text="使用range操作符" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="@android:style/Widget.ProgressBar.Large"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
+            <Button
+                android:id="@+id/btnUseRepeat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="useRepeat"
+                android:text="使用useRepeat操作符" />
+
+            <Button
+                android:id="@+id/btnuseBuffer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="useBuffer"
+                android:text="使用Buffer操作符" />
+
+            <Button
+                android:id="@+id/groupBy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="groupBy"
+                android:text="使用groupBy操作符" />
+
+            <Button
+                android:id="@+id/debounce"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="debounce"
+                android:text="使用debounce操作符" />
+
+            <Button
+                android:id="@+id/distinct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="distinct"
+                android:text="使用distinct操作符" />
+
+            <Button
+                android:id="@+id/elementAt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="elementAt"
+                android:text="使用elementAt操作符" />
+
+            <Button
+                android:id="@+id/filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="filter"
+                android:text="使用filter操作符" />
+
+            <Button
+                android:id="@+id/ofType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="ofType"
+                android:text="使用ofType操作符" />
+
+            <Button
+                android:id="@+id/single"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="single"
+                android:text="使用single操作符" />
+
+            <Button
+                android:id="@+id/ignoreElements"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="ignoreElements"
+                android:text="使用ignoreElements操作符" />
+
+            <Button
+                android:id="@+id/combineLatest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="combineLatest"
+                android:text="使用combineLatest操作符" />
+
+            <Button
+                android:id="@+id/zip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="zip"
+                android:text="使用zip操作符" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="@android:style/Widget.ProgressBar.Large"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

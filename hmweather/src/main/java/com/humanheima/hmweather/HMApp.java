@@ -28,11 +28,16 @@ public class HMApp extends Application {
     public static final String DB_PATH = "/data" + Environment.getDataDirectory().getAbsolutePath() + "/" + PACKAGE_NAME + "/databases";
     public static final String DB_FILE = DB_PATH + "/" + DB_NAME; //数据库文件
 
+    private static final String COPIED = "copied";//标志数据库文件是否已经拷贝
+    private static final String INITIALIZED = "initialized";//标识天气图标是否已经初始化
+
     @Override
     public void onCreate() {
         super.onCreate();
         context = this;
+        //初始化litepal数据库
         LitePalApplication.initialize(context);
+        //把数据库文件拷贝到本地
         copyDataBase(DB_FILE);
         initWeatherIcon();
     }
