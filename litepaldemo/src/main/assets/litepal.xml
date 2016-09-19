@@ -8,7 +8,7 @@
         For example:
         <dbname value="demo" ></dbname>
     -->
-    <dbname value="hmweather"></dbname>
+    <dbname value="litepal"></dbname>
 
     <!--
         Define the version of your database. Each time you want
@@ -33,7 +33,8 @@
     -->
     <list>
         <!--<mapping class="com.humanheima.litepaldemo.CityList.CityInfo"></mapping>-->
-        <mapping class="com.humanheima.litepaldemo.CityInfo"></mapping>
+        <mapping class="com.humanheima.litepaldemo.Students"></mapping>
+        <mapping class="com.humanheima.litepaldemo.Course"></mapping>
     </list>
 
     <!--

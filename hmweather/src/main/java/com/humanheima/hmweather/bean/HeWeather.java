@@ -9,16 +9,6 @@ public class HeWeather extends DataSupport {
     /**
      * city : {"aqi":"103","co":"1","no2":"29","o3":"177","pm10":"48","pm25":"30","qlty":"轻度污染","so2":"11"}
      */
-    private String weaId;//自己加的字段，方便从数据库中查找
-
-    public String getWeaId() {
-        return weaId;
-    }
-
-    public void setWeaId(String weaId) {
-        this.weaId = weaId;
-    }
-
     private AqiBean aqi;
     /**
      * city : 上海

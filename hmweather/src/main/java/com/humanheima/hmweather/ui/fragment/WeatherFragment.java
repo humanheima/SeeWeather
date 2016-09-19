@@ -6,9 +6,11 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseFragment;
 import com.humanheima.hmweather.bean.HeWeather;
+import com.humanheima.hmweather.bean.LocalWeather;
 import com.humanheima.hmweather.bean.WeatherBean;
 import com.humanheima.hmweather.network.NetWork;
 import com.humanheima.hmweather.ui.adapter.WeatherRVAdapter;
@@ -18,6 +20,8 @@ import com.humanheima.hmweather.utils.WeatherKey;
 import java.util.List;
 
 import butterknife.BindView;
+import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -34,9 +38,11 @@ public class WeatherFragment extends BaseFragment {
     SwipeRefreshLayout swipeRefresh;
     WeatherRVAdapter adapter;
     private List<HeWeather> heWeatherList;
+    private HeWeather heWeather;
     private static final String WEA_ID = "weaid";
     private static final String tag = "WeatherFragment";
     private String weaId;
+    private String weaInfo;
 
     public static WeatherFragment newInstance(String weaId) {
         WeatherFragment fragment = new WeatherFragment();
@@ -53,6 +59,7 @@ public class WeatherFragment extends BaseFragment {
 
     @Override
     protected void initData() {
+
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary, R.color.rainyDark, R.color.colorAccent);
         if (getArguments() != null) {
             weaId = getArguments().getString(WEA_ID);
@@ -77,26 +84,56 @@ public class WeatherFragment extends BaseFragment {
         NetWork.getApi().getWeatherByPost(weatherCode, WeatherKey.key)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
-                .map(new Func1<WeatherBean, List<HeWeather>>() {
+                .map(new Func1<WeatherBean, HeWeather>() {
                     @Override
-                    public List<HeWeather> call(WeatherBean weatherBean) {
-                        return weatherBean.getWeatherList();
+                    public HeWeather call(WeatherBean weatherBean) {
+                        return weatherBean.getWeatherList().get(0);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<HeWeather>>() {
+                .subscribe(new Action1<HeWeather>() {
                     @Override
-                    public void call(List<HeWeather> weatherList) {
-                        heWeatherList = weatherList;
+                    public void call(HeWeather weather) {
+                        heWeather = weather;
                         setAdapter();
+                    }
+                });
+    }
+
+    /**
+     * 加载本地天气
+     *
+     * @param code
+     */
+    private void loadLocalWeather(String code) {
+
+    }
+
+
+    private void saveWeaInfo(HeWeather heWeather) {
+        final LocalWeather localWeather = new LocalWeather();
+        Gson gson = new Gson();
+        localWeather.setWeaInfo(gson.toJson(heWeather));
+        Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                subscriber.onNext(localWeather.save());
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean succeed) {
+                        LogUtil.e(tag, "存储天气信息成功吗" + succeed);
                     }
                 });
     }
 
     private void setAdapter() {
         if (adapter == null) {
-            // adapter = new WeatherRVAdapter(getContext(), mWeatherBean);
-            adapter = new WeatherRVAdapter(getContext(), heWeatherList);
+            adapter = new WeatherRVAdapter(getContext(), heWeather);
+            //adapter = new WeatherRVAdapter(getContext(), heWeatherList);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             recyclerView.setAdapter(adapter);
         }

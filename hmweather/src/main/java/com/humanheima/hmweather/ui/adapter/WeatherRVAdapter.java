@@ -48,6 +48,13 @@ public class WeatherRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         dailyForecastList = heWeather.getDaily_forecast();
     }
 
+    public WeatherRVAdapter(Context context, HeWeather heWeather) {
+        this.context = context;
+        this.heWeather = heWeather;
+        hourlyForecastList = heWeather.getHourly_forecast();
+        dailyForecastList = heWeather.getDaily_forecast();
+    }
+
     @Override
     public int getItemViewType(int position) {
         if (position == TYPE_ONE) {

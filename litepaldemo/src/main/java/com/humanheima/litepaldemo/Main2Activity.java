@@ -2,19 +2,25 @@ package com.humanheima.litepaldemo;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    Gson gson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,13 +28,31 @@ public class Main2Activity extends AppCompatActivity
         setContentView(R.layout.activity_main2);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        gson = new Gson();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Students stu = new Students();
+                stu.setName("hongmin");
+                Course course1 = new Course();
+                course1.setScore(1.5f);
+                course1.setName("math");
+                Course course2 = new Course();
+                course2.setScore(1.5f);
+                course2.setName("math");
+                List<Course> courses = new ArrayList<Course>();
+                courses.add(course1);
+                courses.add(course2);
+                stu.setCourseList(courses);
+                String str = gson.toJson(stu);
+                Log.e("tag", str);
+                // course1.setStudents(stu);
+                // course2.setStudents(stu);
+                //course1.save();
+                // course2.save();
+                // stu.save();
+
             }
         });
 

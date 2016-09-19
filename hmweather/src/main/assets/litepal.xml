@@ -36,6 +36,7 @@
         <mapping class="com.humanheima.hmweather.bean.CityInfo"></mapping>
         <mapping class="com.humanheima.hmweather.bean.WeatherCode"></mapping>
         <mapping class="com.humanheima.hmweather.bean.HeWeather"></mapping>
+        <mapping class="com.humanheima.hmweather.bean.LocalWeather"></mapping>
     </list>
 
     <!--

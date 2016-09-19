@@ -15,6 +15,7 @@ import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
 import com.humanheima.hmweather.base.BaseFragment;
 import com.humanheima.hmweather.bean.HeWeather;
+import com.humanheima.hmweather.bean.LocalWeather;
 import com.humanheima.hmweather.bean.WeatherCode;
 import com.humanheima.hmweather.ui.adapter.ViewPagerAdapter;
 import com.humanheima.hmweather.ui.fragment.WeatherFragment;
@@ -69,9 +70,29 @@ public class MainActivity extends BaseActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+       // getLocalWeaInfo();
         initViewPager();
 
     }
+
+    /**
+     * 显示存储在本地的天气信息
+     */
+    private void getLocalWeaInfo() {
+        Observable.create(new Observable.OnSubscribe<List<LocalWeather>>() {
+            @Override
+            public void call(Subscriber<? super List<LocalWeather>> subscriber) {
+                subscriber.onNext(DataSupport.findAll(LocalWeather.class));
+                subscriber.onCompleted();
+            }
+        }).subscribe(new Action1<List<LocalWeather>>() {
+            @Override
+            public void call(List<LocalWeather> localWeathers) {
+
+            }
+        });
+    }
+
 
     private void initViewPager() {
         fragmentList = new ArrayList<>();
