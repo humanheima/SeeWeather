@@ -15,14 +15,17 @@ import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
 import com.humanheima.hmweather.base.BaseFragment;
 import com.humanheima.hmweather.bean.WeatherBean;
+import com.humanheima.hmweather.bean.WeatherCode;
 import com.humanheima.hmweather.ui.adapter.ViewPagerAdapter;
 import com.humanheima.hmweather.ui.fragment.WeatherFragment;
+import com.humanheima.hmweather.utils.RxBus;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import rx.Subscriber;
 
 /**
  * Created by dmw on 2016/9/9.
@@ -63,15 +66,31 @@ public class MainActivity extends BaseActivity
 
     private void initViewPager() {
         fragmentList = new ArrayList<>();
-        fragmentList.add(new WeatherFragment());
-        //fragmentList.add(new WeatherFragment());
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), fragmentList);
         viewPager.setAdapter(viewPagerAdapter);
     }
 
     @Override
     protected void bindEvent() {
+        RxBus.getInstance().toObservable(WeatherCode.class).subscribe(new Subscriber<WeatherCode>() {
+            @Override
+            public void onCompleted() {
 
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(WeatherCode weatherCode) {
+                String weaId = weatherCode.getCode();
+                BaseFragment fragment = WeatherFragment.newInstance(weaId);
+                fragmentList.add(fragment);
+                viewPagerAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

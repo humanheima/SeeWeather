@@ -1,24 +1,25 @@
-package com.humanheima.hmweather.ui.adapter;
+package com.humanheima.viewpagerdemo;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.humanheima.hmweather.base.BaseFragment;
-
 import java.util.List;
 
 /**
- * Created by dmw on 2016/9/9.
+ * Created by Administrator on 2016/9/18.
  */
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
-    List<BaseFragment> fragmentList;
+    List<Fragment> fragmentList;
+    Context context;
 
-    public ViewPagerAdapter(FragmentManager fm, List<BaseFragment> fragmentList) {
+    public ViewPagerAdapter(FragmentManager fm, List<Fragment> fragmentList) {
         super(fm);
         this.fragmentList = fragmentList;
     }
+
 
     @Override
     public Fragment getItem(int position) {

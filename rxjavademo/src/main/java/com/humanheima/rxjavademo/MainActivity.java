@@ -48,20 +48,34 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * RxJava 的基本实现主要有三点：
-     * <p>
      * 11) 创建 Observer 即观察者，它决定事件触发的时候将有怎样的行为
      * 除了 Observer 接口之外，RxJava 还内置了一个实现了 Observer 的抽象类：Subscriber。
      * Subscriber 对 Observer 接口进行了一些扩展，但他们的基本使用方式是完全一样的：
-     * <p>
      * 2) 创建 Observable
      * Observable 即被观察者，它决定什么时候触发事件以及触发怎样的事件。
-     * <p>
      * 3) Subscribe (订阅)
      * 创建了 Observable 和 Observer 之后，再用 subscribe() 方法将它们联结起来，整条链子就可以工作了
      */
     private void fun1() {
 
-        //1 创建观察者
+        //1 创建观察者的两种方式
+        Observer<String> observer = new Observer<String>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(String s) {
+
+            }
+        };
+
         Subscriber<String> subscriber = new Subscriber<String>() {
             @Override
             public void onCompleted() {
@@ -92,11 +106,11 @@ public class MainActivity extends AppCompatActivity {
         //just(T...): 将传入的参数依次发送出来。
         Observable observable1 = Observable.just("hello", "hi", "world");
         /**
-         * // 将会依次调用：
-         // onNext("Hello");
-         // onNext("Hi");
-         // onNext("world");
-         // onCompleted();
+         将会依次调用：
+         onNext("Hello");
+         onNext("Hi");
+         onNext("world");
+         onCompleted();
          */
         //from(T[]) / from(Iterable<? extends T>) : 将传入的数组或 Iterable 拆分成具体对象后，依次发送出来。
         String[] words = {"Hello", "Hi", "Aloha"};
@@ -107,11 +121,11 @@ public class MainActivity extends AppCompatActivity {
         list.add("Aloha");
         Observable observable3 = Observable.from(list);
         /**
-         * // 将会依次调用：
-         // onNext("Hello");
-         // onNext("Hi");
-         // onNext("Aloha");
-         // onCompleted();
+         * 将会依次调用：
+         onNext("Hello");
+         onNext("Hi");
+         onNext("Aloha");
+         onCompleted();
          */
 
         //3 Subscribe (订阅)
@@ -202,10 +216,8 @@ public class MainActivity extends AppCompatActivity {
      * 在不指定线程的情况下， RxJava 遵循的是线程不变的原则，
      * 即：在哪个线程调用 subscribe()，就在哪个线程生产事件；在哪个线程生产事件，就在哪个线程消费事件。
      * 如果需要切换线程，就需要用到 Scheduler （调度器）。
-     * <p>
      * 在RxJava 中，Scheduler ——调度器，相当于线程控制器，RxJava 通过它来指定每一段代码应该运行在什么样的线程。
      * RxJava 已经内置了几个 Scheduler ，它们已经适合大多数的使用场景：
-     * <p>
      * Schedulers.immediate(): 直接在当前线程运行，相当于不指定线程。这是默认的 Scheduler。
      * Schedulers.newThread(): 总是启用新线程，并在新线程执行操作。
      * Schedulers.io(): I/O 操作（读写文件、读写数据库、网络信息交互等）所使用的 Scheduler。行为模式和 newThread() 差不多，
@@ -283,13 +295,15 @@ public class MainActivity extends AppCompatActivity {
                     public Bitmap call(String filePath) {
                         return getBitMapFromPath(filePath);
                     }
-                }).subscribe(new Action1<Bitmap>() {
-            @Override
-            public void call(Bitmap bitmap) {
-                imageView.setImageBitmap(bitmap);
-            }
-        })
-        ;
+                })
+                .subscribeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Bitmap>() {
+                    @Override
+                    public void call(Bitmap bitmap) {
+                        imageView.setImageBitmap(bitmap);
+                    }
+                });
 
     }
 
@@ -666,7 +680,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void useTimer(View view) {
         //延迟产生一个数字就结束
-      /*  Observable.timer(2, TimeUnit.SECONDS)
+       /* Observable.timer(2, TimeUnit.SECONDS)
                 .subscribe(new Action1<Long>() {
                     @Override
                     public void call(Long aLong) {
@@ -688,7 +702,6 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * range操作符
-     * <p>
      * range操作符是创建一组在从n开始，个数为m的连续数字，比如range(3,10)，就是创建3、4、5…12的一组数字，
      *
      * @param view
@@ -755,8 +768,11 @@ public class MainActivity extends AppCompatActivity {
      * buffer操作符周期性地收集源Observable产生的结果到列表中，并把这个列表提交给订阅者，
      * 订阅者处理后，清空buffer列表，同时接收下一次收集的结果并提交给订阅者，周而复始。
      */
+    int num = 1;
+
     public void useBuffer(View view) {
-//定义邮件内容
+
+        //定义邮件内容
         final String[] mails = new String[]{"Here is an email!", "Another email!", "Yet another email!"};
         //每隔1秒就随机发布一封邮件
         Observable<String> endlessMail = Observable.create(new Observable.OnSubscribe<String>() {
@@ -769,6 +785,10 @@ public class MainActivity extends AppCompatActivity {
                 while (true) {
                     String mail = mails[ran.nextInt(mails.length)];
                     subscriber.onNext(mail);
+                    if (num == 8) {
+                        subscriber.onError(new Throwable("故意出错"));
+                    }
+                    num++;
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -781,9 +801,19 @@ public class MainActivity extends AppCompatActivity {
         }).subscribeOn(Schedulers.io());
         //把上面产生的邮件内容缓存到列表中，并每隔3秒通知订阅者
         endlessMail.buffer(3, TimeUnit.SECONDS)
-                .subscribe(new Action1<List<String>>() {
+                .subscribe(new Subscriber<List<String>>() {
                     @Override
-                    public void call(List<String> list) {
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(tag, e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(List<String> list) {
                         Log.e(tag, String.format("You've got %d new messages!  Here they are!", list.size()));
                         for (int i = 0; i < list.size(); i++)
                             Log.e(tag, "**" + list.get(i).toString());
@@ -979,7 +1009,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * lementAt操作符在源Observable产生的结果中，仅仅把指定索引的结果提交给订阅者
+     * elementAt操作符在源Observable产生的结果中，仅仅把指定索引的结果提交给订阅者
      *
      * @param view
      */
