@@ -18,6 +18,7 @@ import com.humanheima.hmweather.bean.WeatherBean;
 import com.humanheima.hmweather.bean.WeatherCode;
 import com.humanheima.hmweather.ui.adapter.ViewPagerAdapter;
 import com.humanheima.hmweather.ui.fragment.WeatherFragment;
+import com.humanheima.hmweather.utils.LogUtil;
 import com.humanheima.hmweather.utils.RxBus;
 
 import java.util.ArrayList;
@@ -25,7 +26,11 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by dmw on 2016/9/9.
@@ -43,6 +48,7 @@ public class MainActivity extends BaseActivity
     NavigationView navView;
     private List<BaseFragment> fragmentList;
     private ViewPagerAdapter viewPagerAdapter;
+    private final static String tag = "MainActivity";
 
     @Override
     protected int bindLayout() {
@@ -72,26 +78,54 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void bindEvent() {
-        RxBus.getInstance().toObservable(WeatherCode.class).subscribe(new Subscriber<WeatherCode>() {
+        RxBus.getInstance().toObservable(WeatherCode.class).subscribe(new Action1<WeatherCode>() {
             @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(WeatherCode weatherCode) {
-                String weaId = weatherCode.getCode();
-                BaseFragment fragment = WeatherFragment.newInstance(weaId);
-                fragmentList.add(fragment);
-                viewPagerAdapter.notifyDataSetChanged();
+            public void call(WeatherCode weatherCode) {
+                //添加一个城市的天气fragment
+                addCityWeather(weatherCode);
             }
         });
     }
+
+    /**
+     * 首先存储weatherCode，
+     * 然后增加天气信息，
+     * 现在还没有判断weaId是否重复
+     *
+     * @param weatherCode
+     */
+    private void addCityWeather(final WeatherCode weatherCode) {
+        Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                subscriber.onNext(weatherCode.save());
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Boolean>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtil.e(tag, e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(Boolean succeed) {
+                        if (succeed) {
+                            String weaId = weatherCode.getCode();
+                            BaseFragment fragment = WeatherFragment.newInstance(weaId);
+                            fragmentList.add(fragment);
+                            viewPagerAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+    }
+
 
     @Override
     public void onBackPressed() {
