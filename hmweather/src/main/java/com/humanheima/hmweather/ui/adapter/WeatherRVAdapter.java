@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.humanheima.hmweather.R;
-import com.humanheima.hmweather.bean.WeatherBean;
+import com.humanheima.hmweather.bean.HeWeather;
 import com.humanheima.hmweather.utils.CommonUtil;
 import com.humanheima.hmweather.utils.ImageUtil;
 import com.humanheima.hmweather.utils.LogUtil;
@@ -35,26 +35,18 @@ public class WeatherRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private final int TYPE_THREE = 2;
     private final int TYPE_FORE = 3;
     private static Context context;
-    private WeatherBean weatherBean;
-    private WeatherBean.HeWeather heWeather;
-    List<WeatherBean.HeWeather.HourlyForecastBean> hourlyForecastList;
-    List<WeatherBean.HeWeather.DailyForecastBean> dailyForecastList;
+    private HeWeather heWeather;
+    private List<HeWeather> heWeatherList;
+    List<HeWeather.HourlyForecastBean> hourlyForecastList;
+    List<HeWeather.DailyForecastBean> dailyForecastList;
 
-    public WeatherRVAdapter(Context context, WeatherBean weatherBean) {
+    public WeatherRVAdapter(Context context, List<HeWeather> heWeatherList) {
         this.context = context;
-        this.weatherBean = weatherBean;
-        heWeather = this.weatherBean.getWeatherList().get(0);
+        this.heWeatherList = heWeatherList;
+        heWeather = this.heWeatherList.get(0);
         hourlyForecastList = heWeather.getHourly_forecast();
         dailyForecastList = heWeather.getDaily_forecast();
     }
-
-    /*public WeatherRVAdapter(Context context, WeatherBean weatherBean) {
-        this.context = context;
-        this.weatherBean = weatherBean;
-        heWeather = this.weatherBean.getWeatherList().get(0);
-        hourlyForecastList = heWeather.getHourly_forecast();
-        dailyForecastList = heWeather.getDaily_forecast();
-    }*/
 
     @Override
     public int getItemViewType(int position) {
@@ -141,7 +133,7 @@ public class WeatherRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             ButterKnife.bind(this, view);
         }
 
-        public void bindNowWeather(WeatherBean.HeWeather weather) {
+        public void bindNowWeather(HeWeather weather) {
             try {
                 tempFlu.setText(String.format("%s℃", weather.getNow().getTmp()));
                 tempMax.setText(String.format("↑ %s °", weather.getDaily_forecast().get(0).getTmp().getMax()));
@@ -228,7 +220,7 @@ public class WeatherRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             ButterKnife.bind(this, view);
         }
 
-        public void bindSuggestion(WeatherBean.HeWeather weather) {
+        public void bindSuggestion(HeWeather weather) {
             try {
 
                 clothBrief.setText(String.format("穿衣指数---%s", weather.getSuggestion().getDrsg().getBrf()));

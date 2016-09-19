@@ -14,12 +14,14 @@ import android.view.MenuItem;
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
 import com.humanheima.hmweather.base.BaseFragment;
-import com.humanheima.hmweather.bean.WeatherBean;
+import com.humanheima.hmweather.bean.HeWeather;
 import com.humanheima.hmweather.bean.WeatherCode;
 import com.humanheima.hmweather.ui.adapter.ViewPagerAdapter;
 import com.humanheima.hmweather.ui.fragment.WeatherFragment;
 import com.humanheima.hmweather.utils.LogUtil;
 import com.humanheima.hmweather.utils.RxBus;
+
+import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +70,7 @@ public class MainActivity extends BaseActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         initViewPager();
+
     }
 
     private void initViewPager() {
@@ -98,7 +101,13 @@ public class MainActivity extends BaseActivity
         Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
-                subscriber.onNext(weatherCode.save());
+                //先查询如果表中没有则存,否则直接返回true
+                WeatherCode temp = DataSupport.where("code=?", weatherCode.getCode()).findFirst(WeatherCode.class);
+                if (temp == null) {
+                    subscriber.onNext(weatherCode.save());
+                } else {
+                    subscriber.onNext(true);
+                }
                 subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io())
@@ -189,7 +198,7 @@ public class MainActivity extends BaseActivity
         return true;
     }
 
-    WeatherBean.HeWeather heWeather;
+    HeWeather heWeather;
 
     //点击悬浮按钮
     @OnClick(R.id.fab)

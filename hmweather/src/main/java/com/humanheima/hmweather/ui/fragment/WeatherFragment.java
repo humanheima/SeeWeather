@@ -8,11 +8,14 @@ import android.support.v7.widget.RecyclerView;
 
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseFragment;
+import com.humanheima.hmweather.bean.HeWeather;
 import com.humanheima.hmweather.bean.WeatherBean;
 import com.humanheima.hmweather.network.NetWork;
 import com.humanheima.hmweather.ui.adapter.WeatherRVAdapter;
 import com.humanheima.hmweather.utils.LogUtil;
 import com.humanheima.hmweather.utils.WeatherKey;
+
+import java.util.List;
 
 import butterknife.BindView;
 import rx.Subscriber;
@@ -29,8 +32,7 @@ public class WeatherFragment extends BaseFragment {
     @BindView(R.id.swipeRefresh)
     SwipeRefreshLayout swipeRefresh;
     WeatherRVAdapter adapter;
-    public static WeatherBean mWeatherBean;
-
+    private List<HeWeather> heWeatherList;
     private static final String WEA_ID = "weaid";
     private static final String tag = "WeatherFragment";
     private String weaId;
@@ -88,7 +90,7 @@ public class WeatherFragment extends BaseFragment {
 
                     @Override
                     public void onNext(WeatherBean weatherBean) {
-                        mWeatherBean = weatherBean;
+                        heWeatherList=weatherBean.getWeatherList();
                         //LogUtil.e("getWeather", "" + heWeather.getStatus() + "," + heWeather.getBasic().getCity());
                     }
                 });
@@ -96,7 +98,8 @@ public class WeatherFragment extends BaseFragment {
 
     private void setAdapter() {
         if (adapter == null) {
-            adapter = new WeatherRVAdapter(getContext(), mWeatherBean);
+           // adapter = new WeatherRVAdapter(getContext(), mWeatherBean);
+            adapter = new WeatherRVAdapter(getContext(), heWeatherList);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             recyclerView.setAdapter(adapter);
         }
