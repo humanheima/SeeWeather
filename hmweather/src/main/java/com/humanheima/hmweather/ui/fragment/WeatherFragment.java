@@ -18,8 +18,9 @@ import com.humanheima.hmweather.utils.WeatherKey;
 import java.util.List;
 
 import butterknife.BindView;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -72,33 +73,29 @@ public class WeatherFragment extends BaseFragment {
     }
 
     private void loadWeather(String code) {
-        String weatherCode = code;
+        final String weatherCode = code;
         NetWork.getApi().getWeatherByPost(weatherCode, WeatherKey.key)
                 .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .map(new Func1<WeatherBean, List<HeWeather>>() {
+                    @Override
+                    public List<HeWeather> call(WeatherBean weatherBean) {
+                        return weatherBean.getWeatherList();
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<WeatherBean>() {
+                .subscribe(new Action1<List<HeWeather>>() {
                     @Override
-                    public void onCompleted() {
-                        LogUtil.e("getWeather", "onCompleted");
+                    public void call(List<HeWeather> weatherList) {
+                        heWeatherList = weatherList;
                         setAdapter();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        LogUtil.e("getWeather", "onError" + e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(WeatherBean weatherBean) {
-                        heWeatherList=weatherBean.getWeatherList();
-                        //LogUtil.e("getWeather", "" + heWeather.getStatus() + "," + heWeather.getBasic().getCity());
                     }
                 });
     }
 
     private void setAdapter() {
         if (adapter == null) {
-           // adapter = new WeatherRVAdapter(getContext(), mWeatherBean);
+            // adapter = new WeatherRVAdapter(getContext(), mWeatherBean);
             adapter = new WeatherRVAdapter(getContext(), heWeatherList);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             recyclerView.setAdapter(adapter);

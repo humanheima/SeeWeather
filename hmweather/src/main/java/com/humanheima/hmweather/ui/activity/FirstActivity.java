@@ -7,10 +7,16 @@ import android.os.Message;
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
 
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+
 public class FirstActivity extends BaseActivity {
 
     private static final int START_MAINACTIVITY = 1;
-    private static final int START_DELAY = 1000;//延迟时间1000毫秒
+    private static final int START_DELAY = 1;//延迟时间1秒
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -43,7 +49,23 @@ public class FirstActivity extends BaseActivity {
 
     @Override
     protected void bindEvent() {
-        handler.sendEmptyMessageDelayed(START_MAINACTIVITY, START_DELAY);
+        //handler.sendEmptyMessageDelayed(START_MAINACTIVITY, START_DELAY);
+        startActDelay();
+    }
+
+    private void startActDelay() {
+        Observable.timer(START_DELAY, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
+                .map(new Func1<Long, Object>() {
+                    @Override
+                    public Object call(Long aLong) {
+                        Intent intent = new Intent(FirstActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        //activity切换的淡入淡出效果
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                        finish();
+                        return null;
+                    }
+                }).subscribe();
     }
 
     @Override
