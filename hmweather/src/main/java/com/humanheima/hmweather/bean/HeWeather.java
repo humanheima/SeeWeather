@@ -1,10 +1,8 @@
 package com.humanheima.hmweather.bean;
 
-import org.litepal.crud.DataSupport;
-
 import java.util.List;
 
-public class HeWeather extends DataSupport {
+public class HeWeather {
 
     /**
      * city : {"aqi":"103","co":"1","no2":"29","o3":"177","pm10":"48","pm25":"30","qlty":"轻度污染","so2":"11"}

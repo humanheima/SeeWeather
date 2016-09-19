@@ -15,7 +15,6 @@ import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
 import com.humanheima.hmweather.base.BaseFragment;
 import com.humanheima.hmweather.bean.HeWeather;
-import com.humanheima.hmweather.bean.LocalWeather;
 import com.humanheima.hmweather.bean.WeatherCode;
 import com.humanheima.hmweather.ui.adapter.ViewPagerAdapter;
 import com.humanheima.hmweather.ui.fragment.WeatherFragment;
@@ -33,6 +32,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -70,33 +70,54 @@ public class MainActivity extends BaseActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-       // getLocalWeaInfo();
         initViewPager();
+        getLocalWeaId();
 
     }
 
     /**
-     * 显示存储在本地的天气信息
+     * 显示存储在本地的天气代码
      */
-    private void getLocalWeaInfo() {
-        Observable.create(new Observable.OnSubscribe<List<LocalWeather>>() {
+    private void getLocalWeaId() {
+        Observable.create(new Observable.OnSubscribe<List<WeatherCode>>() {
             @Override
-            public void call(Subscriber<? super List<LocalWeather>> subscriber) {
-                subscriber.onNext(DataSupport.findAll(LocalWeather.class));
-                subscriber.onCompleted();
+            public void call(Subscriber<? super List<WeatherCode>> subscriber) {
+                List<WeatherCode> weatherCodeList = DataSupport.findAll(WeatherCode.class);
+                if (weatherCodeList != null && weatherCodeList.size() > 0) {
+                    subscriber.onNext(weatherCodeList);
+                } else {
+                    subscriber.onError(new Throwable("没有找到天气id"));
+                }
             }
-        }).subscribe(new Action1<List<LocalWeather>>() {
-            @Override
-            public void call(List<LocalWeather> localWeathers) {
-
-            }
-        });
+        }).subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .flatMap(new Func1<List<WeatherCode>, Observable<WeatherCode>>() {
+                    @Override
+                    public Observable<WeatherCode> call(List<WeatherCode> weatherCodes) {
+                        return Observable.from(weatherCodes);
+                    }
+                }).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<WeatherCode>() {
+                    @Override
+                    public void call(WeatherCode weatherCode) {
+                        String weaId = weatherCode.getCode();
+                        BaseFragment fragment = WeatherFragment.newInstance(weaId);
+                        fragmentList.add(fragment);
+                        viewPagerAdapter.notifyDataSetChanged();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        LogUtil.e(tag, throwable.getMessage());
+                    }
+                });
     }
 
 
     private void initViewPager() {
         fragmentList = new ArrayList<>();
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), fragmentList);
+        viewPager.setOffscreenPageLimit(14);
         viewPager.setAdapter(viewPagerAdapter);
     }
 
