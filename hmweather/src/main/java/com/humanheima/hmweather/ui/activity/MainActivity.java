@@ -13,8 +13,7 @@ import android.view.MenuItem;
 
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
-import com.humanheima.hmweather.base.BaseFragment;
-import com.humanheima.hmweather.bean.HeWeather;
+import com.humanheima.hmweather.bean.LocalWeather;
 import com.humanheima.hmweather.bean.WeatherCode;
 import com.humanheima.hmweather.ui.adapter.ViewPagerAdapter;
 import com.humanheima.hmweather.ui.fragment.WeatherFragment;
@@ -49,7 +48,7 @@ public class MainActivity extends BaseActivity
     FloatingActionButton fab;
     @BindView(R.id.nav_view)
     NavigationView navView;
-    private List<BaseFragment> fragmentList;
+    private List<WeatherFragment> fragmentList;
     private ViewPagerAdapter viewPagerAdapter;
     private final static String tag = "MainActivity";
 
@@ -101,7 +100,7 @@ public class MainActivity extends BaseActivity
                     @Override
                     public void call(WeatherCode weatherCode) {
                         String weaId = weatherCode.getCode();
-                        BaseFragment fragment = WeatherFragment.newInstance(weaId);
+                        WeatherFragment fragment = WeatherFragment.newInstance(weaId);
                         fragmentList.add(fragment);
                         viewPagerAdapter.notifyDataSetChanged();
                     }
@@ -169,14 +168,52 @@ public class MainActivity extends BaseActivity
                     public void onNext(Boolean succeed) {
                         if (succeed) {
                             String weaId = weatherCode.getCode();
-                            BaseFragment fragment = WeatherFragment.newInstance(weaId);
+                            WeatherFragment fragment = WeatherFragment.newInstance(weaId);
                             fragmentList.add(fragment);
                             viewPagerAdapter.notifyDataSetChanged();
+                            //viewPager.setCurrentItem(fragmentList.size() - 1, true);
                         }
                     }
                 });
     }
 
+    /**
+     * 删除当前的fragment,在数据库中的数据也要删除
+     */
+    private void deleteCurFragment() {
+        if (fragmentList.size() > 0) {
+            WeatherFragment curFragment = fragmentList.get(viewPager.getCurrentItem());
+            if (curFragment != null) {
+                final String deleteWeaId = curFragment.weaId;
+                viewPagerAdapter.destroyItem(viewPager, viewPager.getCurrentItem(), curFragment);
+                fragmentList.remove(viewPager.getCurrentItem());
+                viewPagerAdapter.notifyDataSetChanged();
+                Observable.create(new Observable.OnSubscribe<Boolean>() {
+                    @Override
+                    public void call(Subscriber<? super Boolean> subscriber) {
+                        int num = DataSupport.deleteAll(LocalWeather.class, "weaid=?", deleteWeaId);
+                        if (num > 0) {
+                            subscriber.onNext(true);
+                        } else {
+                            subscriber.onError(new Throwable("删除失败，或数据库中不存在数据"));
+                        }
+                    }
+                }).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Action1<Boolean>() {
+                            @Override
+                            public void call(Boolean aBoolean) {
+                                LogUtil.e(tag, "删除数据库中的天气信息成功");
+                            }
+                        }, new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                LogUtil.e(tag, throwable.getMessage());
+                            }
+                        });
+            }
+        }
+    }
 
     @Override
     public void onBackPressed() {
@@ -219,6 +256,8 @@ public class MainActivity extends BaseActivity
         if (id == R.id.nav_city) {
             Intent intent = new Intent(MainActivity.this, ChooseCityActivity.class);
             startActivity(intent);
+        } else if (id == R.id.nav_delete_city) {
+            deleteCurFragment();
         }
        /* if (id == R.id.nav_camera) {
             // Handle the camera action
@@ -240,121 +279,8 @@ public class MainActivity extends BaseActivity
         return true;
     }
 
-    HeWeather heWeather;
-
     //点击悬浮按钮
     @OnClick(R.id.fab)
     public void onFabClick() {
-       /* NetWork.getApi().getWeatherByPost("CN101020100", "fcaa02b41e9048e7aa5854b1e279e1c6")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<WeatherBean>() {
-                    @Override
-                    public void onCompleted() {
-                        LogUtil.e("getWeather", "onCompleted");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        LogUtil.e("getWeather", "onError" + e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(WeatherBean weatherBean) {
-                        heWeather = weatherBean.getWeatherList().get(0);
-                        LogUtil.e("getWeather", "" + heWeather.getStatus() + "," + heWeather.getBasic().getCity());
-                    }
-                });*/
-       /* NetWork.getApi().getCityInfoList("allchina", "fcaa02b41e9048e7aa5854b1e279e1c6")
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(new Subscriber<CityInfoList>() {
-                    @Override
-                    public void onCompleted() {
-                        Log.e("tag", "onCompleted");
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-                        Log.e("tag", "onError" + throwable.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(CityInfoList cityInfoList) {
-                        cityInfo = cityInfoList.getCityInfo();
-                        if (cityInfo.size() > 0) {
-                            DataSupport.saveAll(cityInfo);
-                        }
-                    }
-                });*/
-
-        //final List<CityInfo> list = DataSupport.where("id > ?", "0").find(CityInfo.class);
-      /*  if (list.size() > 0) {
-            ContentValues values = new ContentValues();
-            values.put("citypinyin", "");
-            int i = DataSupport.updateAll(CityInfo.class, values, "id>?", "0");
-            if (i > 0) {
-                LogUtil.e("tag", "updata success");
-            }
-        }*/
-       /* if (list.size() > 0) {
-
-            new AsyncTask<Void, Void, Boolean>() {
-                @Override
-                protected Boolean doInBackground(Void... voids) {
-                    long id = -1;
-                    for (int i = 0; i < list.size(); i++) {
-                        cityInfo = list.get(i);
-                        String city = cityInfo.getCity();
-                        id = cityInfo.getId();
-                        char[] chars = city.toCharArray();
-                        String cityPinyin = "";
-                        String s = null;
-                        for (int j = 0; j < chars.length; j++) {
-                            s = Pinyin.toPinyin(chars[j]);
-                            cityPinyin += s;
-                        }
-                        ContentValues values = new ContentValues();
-                        values.put("citypinyin", cityPinyin);
-                        DataSupport.update(CityInfo.class, values, id);
-                    }
-                    if (id > 0) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-
-                @Override
-                protected void onPostExecute(Boolean aBoolean) {
-                    if (aBoolean) {
-                        LogUtil.e("save", "successful");
-                    } else {
-                        LogUtil.e("save", "failed");
-                    }
-                }
-            }.execute();
-        }*/
-
-      /*  NetWork.getApi().getWeatherByPost(cityInfo.getWeatherId(), C.KEY)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<WeatherBean>() {
-                    @Override
-                    public void onCompleted() {
-                        LogUtil.e("getWeather", "onCompleted");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        LogUtil.e("getWeather", "onError" + e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(WeatherBean weatherBean) {
-                        heWeather = weatherBean.getWeatherList().get(0);
-                        LogUtil.e("getWeather", "" + heWeather.getStatus() + "," + heWeather.getBasic().getCity());
-                    }
-                });*/
     }
 }

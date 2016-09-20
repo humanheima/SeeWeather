@@ -44,7 +44,7 @@ public class WeatherFragment extends BaseFragment {
     private HeWeather heWeather;
     private static final String WEA_ID = "weaid";
     private static final String tag = "WeatherFragment";
-    private String weaId;
+    public String weaId;
     private String weaInfo;
     private Gson gson;
 
@@ -108,6 +108,11 @@ public class WeatherFragment extends BaseFragment {
                             setAdapter();
                             //把天气信息存起来
                             saveWeaInfo(heWeather);
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            LogUtil.e(tag, throwable.getMessage());
                         }
                     });
         } else {

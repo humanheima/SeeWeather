@@ -109,6 +109,7 @@ public class WeatherActivity extends AppCompatActivity implements NavigationView
             fragList.add(fragWeather);
         }
     }
+
     /**
      * 判断是不是第一次使用软件
      *
@@ -161,12 +162,6 @@ public class WeatherActivity extends AppCompatActivity implements NavigationView
 
     @Override
     public void onBackPressed() {
-       /* DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }*/
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (System.currentTimeMillis() - exitTime > exitDuration) {
             SnackUtil.SnackShort(actLinLayout, getString(R.string.press_again));
@@ -198,8 +193,8 @@ public class WeatherActivity extends AppCompatActivity implements NavigationView
         if (id == R.id.action_share) {
             if (NetUtil.hasNetWork()) {
                 new ShareWeatherTask(WeatherActivity.this).execute();
-            }else {
-                SnackUtil.SnackShort(actLinLayout,R.string.net_error);
+            } else {
+                SnackUtil.SnackShort(actLinLayout, R.string.net_error);
             }
             return true;
         }
@@ -210,28 +205,32 @@ public class WeatherActivity extends AppCompatActivity implements NavigationView
      * 删除当前的Fragment,并删除shareprefrence中的内容
      */
     private void deleteCurFrag() {
-        FragWeather curFrag = fragList.get(viewPager.getCurrentItem());
-        String delWeaid = curFrag.weaid;
-        adapter.destroyItem(viewPager, viewPager.getCurrentItem(), curFrag);
-        fragList.remove(viewPager.getCurrentItem());
-        adapter.notifyDataSetChanged();
-        weaidEditor.remove(delWeaid);
-        weaidEditor.commit();
-        SharedPreferences.Editor editor = curFrag.editor;
-        editor.remove(delWeaid);
-        editor.remove(delWeaid + "days");
-        editor.remove(delWeaid + "citynm");
-        editor.remove(delWeaid + "week");
-        editor.remove(delWeaid + "temperature_curr");
-        editor.remove(delWeaid + "temperature");
-        editor.remove(delWeaid + "humidity");
-        editor.remove(delWeaid + "wind");
-        editor.remove(delWeaid + "winp");
-        editor.remove(delWeaid + "weather");
-        editor.remove(delWeaid + "aqi");
-        editor.remove(delWeaid + "aqi_levnm");
-        editor.remove(delWeaid + "aqi_remark");
-        editor.commit();
+        if (fragList.size() > 0) {
+            FragWeather curFrag = fragList.get(viewPager.getCurrentItem());
+            if (curFrag != null) {
+                String delWeaid = curFrag.weaid;
+                adapter.destroyItem(viewPager, viewPager.getCurrentItem(), curFrag);
+                fragList.remove(viewPager.getCurrentItem());
+                adapter.notifyDataSetChanged();
+                weaidEditor.remove(delWeaid);
+                weaidEditor.commit();
+                SharedPreferences.Editor editor = curFrag.editor;
+                editor.remove(delWeaid);
+                editor.remove(delWeaid + "days");
+                editor.remove(delWeaid + "citynm");
+                editor.remove(delWeaid + "week");
+                editor.remove(delWeaid + "temperature_curr");
+                editor.remove(delWeaid + "temperature");
+                editor.remove(delWeaid + "humidity");
+                editor.remove(delWeaid + "wind");
+                editor.remove(delWeaid + "winp");
+                editor.remove(delWeaid + "weather");
+                editor.remove(delWeaid + "aqi");
+                editor.remove(delWeaid + "aqi_levnm");
+                editor.remove(delWeaid + "aqi_remark");
+                editor.commit();
+            }
+        }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -281,7 +280,7 @@ public class WeatherActivity extends AppCompatActivity implements NavigationView
                         fragWeather = FragWeather.newInstance(weaid);
                         fragList.add(fragWeather);
                         adapter.notifyDataSetChanged();
-                        viewPager.setCurrentItem(fragList.size()-1,true);
+                        viewPager.setCurrentItem(fragList.size() - 1, true);
                     }
                 }
             } else {

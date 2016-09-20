@@ -29,6 +29,11 @@ import adapter.CityListViewAdapter;
 import db.WeatherCityDB;
 import fragment.LocateDialogFragment;
 import model.WeatherCityModel;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 import util.Constants;
 import util.NetUtil;
 import util.PinYn4jUtil;
@@ -44,7 +49,7 @@ import view.SideBar;
  * 手动输入搜索：可以输入城市的汉字，拼音 首字母,进行搜索
  * 点击相应的城市进入实时界面，查询天气情况
  */
-public class MdCityActivity extends AppCompatActivity{
+public class MdCityActivity extends AppCompatActivity {
 
     //定位相关的变量
     private LocationClient locationClient;
@@ -75,6 +80,7 @@ public class MdCityActivity extends AppCompatActivity{
     private Toolbar toolbar;
     private PinyinComparator pinyinComparator;
     private FloatingActionButton fab;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,15 +90,16 @@ public class MdCityActivity extends AppCompatActivity{
         findViews();
         setSupportActionBar(toolbar);
     }
+
     private void findViews() {
         toolbar = (Toolbar) findViewById(R.id.cityToolbar);
         fab = (FloatingActionButton) findViewById(R.id.fab);
-
+        lv_city = (ListView) findViewById(R.id.lv_city);
+        rlCity = (RelativeLayout) findViewById(R.id.rlcity);
+        sideBar = (SideBar) findViewById(R.id.sidrbar);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               /* Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
                 //定位城市
                 if (NetUtil.hasNetWork()) {
                     startLocate();
@@ -101,51 +108,24 @@ public class MdCityActivity extends AppCompatActivity{
                 }
             }
         });
-
-        // list里面填充数据
+        pinyinComparator = new PinyinComparator();
+      /*  // list里面填充数据
         sourceDatalist = cityDB.loadCity();
         pinyinComparator = new PinyinComparator();
         Collections.sort(sourceDatalist, pinyinComparator);
         adapter = new CityListViewAdapter(this, sourceDatalist);
-        lv_city = (ListView) findViewById(R.id.lv_city);
-        lv_city.setAdapter(adapter);
+        lv_city.setAdapter(adapter);*/
         // 找到ListView控件并为其添加监听
         lv_city.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Intent weatherIntent = new Intent(CityActivity.this,WeatherActivity.class);
                 Intent intent = new Intent();
-                //intent.putExtra("weaid",((WeatherCityModel) adapter.getItem(position)).getWeaid());
                 intent.putExtra(Constants.ARG_WEAID, ((WeatherCityModel) adapter.getItem(position)).getWeaid());
                 setResult(RESULT_OK, intent);
-                //startActivity(weatherIntent);
                 MdCityActivity.this.finish();
             }
         });
-        rlCity= (   RelativeLayout) findViewById(R.id.rlcity);
-        // clearEditText = (ClearEditText) findViewById(R.id.filter_edit);
-        // 根据输入框输入值的改变来过滤搜索
-      /*  clearEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before,
-                                      int count) {
-                // 当输入框里面的值为空，更新为原来的列表，否则为过滤数据列表
-                String textstr = PinYn4jUtil.getPinYin(s.toString()).toLowerCase();
-                //String textstr = s.toString().toLowerCase();
-                filterData(textstr);
-            }
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });*/
-        sideBar = (SideBar) findViewById(R.id.sidrbar);
         // 设置右侧触摸监听
         sideBar.setOnTouchingLetterChangedListener(new SideBar.OnTouchingLetterChangedListener() {
             @Override
@@ -157,6 +137,24 @@ public class MdCityActivity extends AppCompatActivity{
                 }
             }
         });
+
+        Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                // list里面填充数据
+                sourceDatalist = cityDB.loadCity();
+                Collections.sort(sourceDatalist, pinyinComparator);
+                subscriber.onNext(true);
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean aBoolean) {
+                        adapter = new CityListViewAdapter(MdCityActivity.this, sourceDatalist);
+                        lv_city.setAdapter(adapter);
+                    }
+                });
     }
 
     /**
@@ -185,6 +183,7 @@ public class MdCityActivity extends AppCompatActivity{
         Collections.sort(filterlist, pinyinComparator);
         adapter.updateListView(filterlist);
     }
+
     /**
      * 将城市列表数据库文件复制到本地
      *
@@ -219,12 +218,13 @@ public class MdCityActivity extends AppCompatActivity{
         locationClient.start();
 
     }
+
     private class MyLocListener implements BDLocationListener {
 
         @Override
         public void onReceiveLocation(BDLocation bdLocation) {
             citynm = bdLocation.getDistrict() != null ? bdLocation.getDistrict() : bdLocation.getCity();
-            if (citynm!=null&&citynm.length() > 0) {
+            if (citynm != null && citynm.length() > 0) {
                 citynm = citynm.substring(0, citynm.length() - 1);
                 //tvLocCity.setText(citynm);
                 weaid = cityDB.queryWeaid(citynm);
@@ -246,9 +246,9 @@ public class MdCityActivity extends AppCompatActivity{
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        getMenuInflater().inflate(R.menu.city_menu,menu);
-        MenuItem searchItem=menu.findItem(R.id.action_search);
-        SearchView searchView= (SearchView) MenuItemCompat.getActionView(searchItem);
+        getMenuInflater().inflate(R.menu.city_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -265,6 +265,7 @@ public class MdCityActivity extends AppCompatActivity{
         });
         return super.onCreateOptionsMenu(menu);
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -275,6 +276,7 @@ public class MdCityActivity extends AppCompatActivity{
             }
         }
     }
+
     /**
      * 显示进度对话框
      */
@@ -287,6 +289,7 @@ public class MdCityActivity extends AppCompatActivity{
         }
         progressDialog.show();
     }
+
     /**
      * 关闭进度对话框
      */
