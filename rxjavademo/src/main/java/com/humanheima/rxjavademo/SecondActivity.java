@@ -9,9 +9,11 @@ import com.humanheima.rxjavademo.network.NetWork;
 import java.util.List;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
+import rx.schedulers.Schedulers;
 
 public class SecondActivity extends AppCompatActivity {
     public final static String tag = "tag";
@@ -90,6 +92,23 @@ public class SecondActivity extends AppCompatActivity {
                 });
     }
 
+    public void fun1() {
+        Observable.just(1, 2, 3, 4)
+                .subscribeOn(Schedulers.io())//指定时间的产生在io线程
+                .map(new Func1<Integer, String>() {
+                    @Override
+                    public String call(Integer integer) {
+                        return "string" + integer;
+                    }
+                })//
+                .observeOn(AndroidSchedulers.mainThread())//遇到observeOn()从io线程切换到UI线程，之前的map操作也是在io线程,之后的subscribe()操作在UI线程
+                .subscribe(new Action1<String>() {
+                    @Override
+                    public void call(String s) {
+                        Log.e("tag", "UI线程打印" + s);
+                    }
+                });
+    }
 
 
 }

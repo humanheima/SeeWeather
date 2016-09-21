@@ -153,6 +153,13 @@
                 android:layout_height="wrap_content"
                 android:onClick="zip"
                 android:text="使用zip操作符" />
+            <Button
+                android:id="@+id/testSubscriber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="test"
+                android:text="doOnSubscribe() 执行在 subscribe() 发生的线程" />
+
 
             <ProgressBar
                 android:id="@+id/progressBar"

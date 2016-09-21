@@ -1257,6 +1257,46 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void test(View view) {
+        Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+                for (int i = 0; i < 10; i++) {
+                    try {
+                        subscriber.onNext("String" + i);
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                subscriber.onCompleted();
+
+            }
+        }).subscribeOn(Schedulers.io())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        progressBar.setVisibility(View.VISIBLE);
+                    }
+                }).subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<String>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        Log.e("test", s);
+                    }
+                });
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
