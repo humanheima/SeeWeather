@@ -15,7 +15,6 @@ public class SPUtil {
     private static SharedPreferences hmSpref;
     private final static String SP_NAME = "hmSpref";
     private static SharedPreferences.Editor editor;
-
     private SPUtil() {
         hmSpref = HMApp.getAppContext().getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
         editor = hmSpref.edit();

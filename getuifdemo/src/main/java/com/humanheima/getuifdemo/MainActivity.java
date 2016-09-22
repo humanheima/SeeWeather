@@ -1,6 +1,7 @@
 package com.humanheima.getuifdemo;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.igexin.sdk.PushManager;
+
+import static com.igexin.sdk.PushService.context;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSION = 0;
@@ -35,7 +38,10 @@ public class MainActivity extends AppCompatActivity {
             // SDK初始化，第三方程序启动时，都要进行SDK初始化工作
             PushManager.getInstance().initialize(this.getApplicationContext());
         }
-
+        Intent intent2 = new Intent(context,
+                MainActivity.class);
+        intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent2);
     }
 
     private void requestPermission() {

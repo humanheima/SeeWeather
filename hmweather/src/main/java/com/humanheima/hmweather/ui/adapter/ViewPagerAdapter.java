@@ -2,7 +2,7 @@ package com.humanheima.hmweather.ui.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 
 import com.humanheima.hmweather.ui.fragment.WeatherFragment;
 
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by dmw on 2016/9/9.
  */
-public class ViewPagerAdapter extends FragmentStatePagerAdapter {
+public class ViewPagerAdapter extends FragmentPagerAdapter {
 
     List<WeatherFragment> fragmentList;
 
@@ -30,8 +30,4 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         return fragmentList.size();
     }
 
-    @Override
-    public int getItemPosition(Object object) {
-        return POSITION_NONE;
-    }
 }

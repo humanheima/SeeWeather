@@ -16,6 +16,7 @@ public class MyGeTuiReceiver extends BroadcastReceiver {
     public static StringBuilder payloadData = new StringBuilder();
 
     public MyGeTuiReceiver() {
+
     }
 
     @Override

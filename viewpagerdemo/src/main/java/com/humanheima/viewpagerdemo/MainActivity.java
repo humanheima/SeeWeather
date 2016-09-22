@@ -1,10 +1,10 @@
 package com.humanheima.viewpagerdemo;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
@@ -32,6 +32,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //fragmentList.add(BlankFragment.newInstance("", ""));
         adapter = new ViewPagerAdapter(getSupportFragmentManager(), fragmentList);
         viewPager.setAdapter(adapter);
+        Class clz = this.getClass();
+        MainActivity mainActivity = new MainActivity();
+        startActivity(new Intent(MainActivity.this, mainActivity.getClass()));
     }
 
     @Override
