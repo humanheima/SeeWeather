@@ -23,8 +23,10 @@ import com.humanheima.hmweather.network.NetWork;
 import com.humanheima.hmweather.ui.adapter.RvAdapter;
 import com.humanheima.hmweather.utils.GsonUtil;
 import com.humanheima.hmweather.utils.LogUtil;
+import com.humanheima.hmweather.utils.NetWorkUtil;
 import com.humanheima.hmweather.utils.RxBus;
 import com.humanheima.hmweather.utils.SPUtil;
+import com.humanheima.hmweather.utils.T;
 import com.humanheima.hmweather.utils.WeatherKey;
 
 import org.litepal.crud.DataSupport;
@@ -40,6 +42,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+
+import static org.litepal.crud.DataSupport.deleteAll;
 
 /**
  * Created by dmw on 2016/9/9.
@@ -86,7 +90,7 @@ public class MainActivity extends BaseActivity
         weatherList = new ArrayList<>();
         if (!SPUtil.getInstance().getBoolean(FIRST_USE)) {
             //第一次使用，加载默认城市的天气预报，
-            LogUtil.e(tag,"first use");
+            LogUtil.e(tag, "first use");
             addCityWeather(new WeatherCode(MINHANG));
         } else {
             //从多个数据源获取数据
@@ -102,10 +106,12 @@ public class MainActivity extends BaseActivity
             @Override
             public void call(WeatherCode weatherCode) {
                 //添加一个城市的天气fragment
+
                 addCityWeather(weatherCode);
             }
         });
     }
+
     /**
      * 从数据库获取天气信息
      */
@@ -156,82 +162,6 @@ public class MainActivity extends BaseActivity
     }
 
     /**
-     * 如果有网络，就从网路加载数据，否则，就从本地加载数据
-     *
-     * @param code
-     */
-    /*private void loadWeather(String code) {
-        final String weatherCode = code;
-        if (NetWorkUtil.isConnected()) {
-            NetWork.getApi().getWeatherByPost(weatherCode, WeatherKey.key)
-                    .subscribeOn(Schedulers.io())
-                    .map(new Func1<WeatherBean, HeWeather>() {
-                        @Override
-                        public HeWeather call(WeatherBean weatherBean) {
-                            return weatherBean.getWeatherList().get(0);
-                        }
-                    })
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<HeWeather>() {
-                        @Override
-                        public void call(HeWeather weather) {
-                            heWeather = weather;
-                            setAdapter();
-                            //把天气信息存起来
-                            saveWeaInfo(heWeather);
-                        }
-                    }, new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            LogUtil.e(tag, throwable.getMessage());
-                        }
-                    });
-        } else {
-            loadDBWeather(code);
-        }
-
-    }*/
-
-   /* *//**
-     * 显示存储在本地的天气代码
-     *//*
-    private void getLocalWeaId() {
-        Observable.create(new Observable.OnSubscribe<List<WeatherCode>>() {
-            @Override
-            public void call(Subscriber<? super List<WeatherCode>> subscriber) {
-                List<WeatherCode> weatherCodeList = DataSupport.findAll(WeatherCode.class);
-                if (weatherCodeList != null && weatherCodeList.size() > 0) {
-                    subscriber.onNext(weatherCodeList);
-                } else {
-                    subscriber.onError(new Throwable("没有找到天气id"));
-                }
-            }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .flatMap(new Func1<List<WeatherCode>, Observable<WeatherCode>>() {
-                    @Override
-                    public Observable<WeatherCode> call(List<WeatherCode> weatherCodes) {
-                        return Observable.from(weatherCodes);
-                    }
-                }).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<WeatherCode>() {
-                    @Override
-                    public void call(WeatherCode weatherCode) {
-                        String weaId = weatherCode.getCode();
-                        WeatherFragment fragment = WeatherFragment.newInstance(weaId);
-                        //fragmentList.add(fragment);
-                        //
-                        // viewPagerAdapter.notifyDataSetChanged();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        LogUtil.e(tag, throwable.getMessage());
-                    }
-                });
-    }*/
-
-    /**
      * 首先存储weatherCode，
      * 然后增加天气信息，
      * 现在还没有判断weaId是否重复
@@ -239,90 +169,64 @@ public class MainActivity extends BaseActivity
      * @param weatherCode
      */
     private void addCityWeather(final WeatherCode weatherCode) {
-        NetWork.getApi().getWeatherByPost(weatherCode.getCode(), WeatherKey.key)
-                .flatMap(new Func1<WeatherBean, Observable<HeWeather>>() {
-                    @Override
-                    public Observable<HeWeather> call(WeatherBean weatherBean) {
-                        if (weatherBean != null) {
-                            return Observable.just(weatherBean.getWeatherList().get(0));
-                        }
-                        return null;
+        if (NetWorkUtil.isConnected()) {
+            Observable.create(new Observable.OnSubscribe<Boolean>() {
+                @Override
+                public void call(Subscriber<? super Boolean> subscriber) {
+                    LocalWeather localWeather = DataSupport.where("weaid=?", weatherCode.getCode()).findFirst(LocalWeather.class);
+                    if (localWeather != null) {
+                        subscriber.onNext(true);
+                    } else {
+                        subscriber.onNext(false);
                     }
-                }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<HeWeather>() {
-                    @Override
-                    public void onCompleted() {
-                        SPUtil.getInstance().putBoolan(FIRST_USE,true);
-                        setRvAdapter();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(HeWeather heWeather) {
-                        if (heWeather != null) {
-                            weatherList.add(heWeather);
-                            //开启新线程保存到数据库中
-                            saveWeaInfo(heWeather);
-                        }
-                    }
-                });
-     /*   Observable.create(new Observable.OnSubscribe<Boolean>() {
-            @Override
-            public void call(Subscriber<? super Boolean> subscriber) {
-                //先查询如果表中没有则存,否则直接返回true
-                WeatherCode temp = DataSupport.where("code=?", weatherCode.getCode()).findFirst(WeatherCode.class);
-                if (temp == null) {
-                    subscriber.onNext(weatherCode.save());
-                } else {
-                    subscriber.onNext(true);
+                    subscriber.onCompleted();
                 }
-                subscriber.onCompleted();
-            }
-        }).subscribeOn(Schedulers.io())
-                .flatMap(new Func1<Boolean, Observable<WeatherBean>>() {
-                    @Override
-                    public Observable<WeatherBean> call(Boolean succeed) {
-                        if (succeed) {
-                            return NetWork.getApi().getWeatherByPost(weatherCode.getCode(), WeatherKey.key);
+            }).subscribeOn(Schedulers.io())
+                    .flatMap(new Func1<Boolean, Observable<WeatherBean>>() {
+                        @Override
+                        public Observable<WeatherBean> call(Boolean succeed) {
+                            if (!succeed) {
+                                return NetWork.getApi().getWeatherByPost(weatherCode.getCode(), WeatherKey.key);
+                            }
+                            return null;
                         }
-                        return null;
-                    }
-                })
-                .flatMap(new Func1<WeatherBean, Observable<HeWeather>>() {
-                    @Override
-                    public Observable<HeWeather> call(WeatherBean weatherBean) {
-                        if (weatherBean != null) {
-                            return Observable.just(weatherBean.getWeatherList().get(0));
+                    })
+                    .flatMap(new Func1<WeatherBean, Observable<HeWeather>>() {
+                        @Override
+                        public Observable<HeWeather> call(WeatherBean weatherBean) {
+                            if (weatherBean != null) {
+                                return Observable.just(weatherBean.getWeatherList().get(0));
+                            }
+                            return null;
                         }
-                        return null;
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<HeWeather>() {
-                    @Override
-                    public void onCompleted() {
-                        //设置recyclerView的适配器
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(HeWeather heWeather) {
-                        if (heWeather != null) {
-                            weatherList.add(heWeather);
-                            //开启新线程保存到数据库中
-                            saveWeaInfo(heWeather);
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<HeWeather>() {
+                        @Override
+                        public void onCompleted() {
+                            if (!SPUtil.getInstance().getBoolean(FIRST_USE)) {
+                                SPUtil.getInstance().putBoolan(FIRST_USE, true);
+                            }
                         }
-                    }
-                });*/
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onNext(HeWeather heWeather) {
+                            if (heWeather != null) {
+                                weatherList.add(heWeather);
+                                //开启新线程保存到数据库中
+                                saveWeaInfo(heWeather);
+                                setRvAdapter();
+                            }
+                        }
+                    });
+        } else {
+            T.showToast(this, getString(R.string.no_network));
+        }
     }
 
     private void setRvAdapter() {
@@ -334,7 +238,8 @@ public class MainActivity extends BaseActivity
             recyclerView.setAdapter(rvAdapter);
             helper.attachToRecyclerView(recyclerView);
         } else {
-            rvAdapter.notifyDataSetChanged();
+            rvAdapter.notifyItemInserted(weatherList.size() - 1);
+            recyclerView.smoothScrollToPosition(weatherList.size() - 1);
         }
     }
 
@@ -350,7 +255,7 @@ public class MainActivity extends BaseActivity
         Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
-                DataSupport.deleteAll(LocalWeather.class, "weaid=?", heWeather.getBasic().getId());
+                deleteAll(LocalWeather.class, "weaid=?", heWeather.getBasic().getId());
                 if (localWeather.save()) {
                     subscriber.onNext(true);
                 } else {
@@ -414,6 +319,7 @@ public class MainActivity extends BaseActivity
             Intent intent = new Intent(MainActivity.this, ChooseCityActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_delete_city) {
+            deleteCity();
         }
        /* if (id == R.id.nav_camera) {
             // Handle the camera action
@@ -433,6 +339,48 @@ public class MainActivity extends BaseActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void deleteCity() {
+        if (layoutManager != null) {
+            int position = layoutManager.findFirstVisibleItemPosition();
+            if (position != -1) {
+                final HeWeather heWeather = weatherList.remove(position);
+                rvAdapter.notifyItemRemoved(position);
+                recyclerView.smoothScrollToPosition(position);
+                Observable.create(new Observable.OnSubscribe<Integer>() {
+                    @Override
+                    public void call(Subscriber<? super Integer> subscriber) {
+                        int count = DataSupport.deleteAll(LocalWeather.class, "weaid=?", heWeather.getBasic().getId());
+                        if (count > 0) {
+                            subscriber.onNext(count);
+                            subscriber.onCompleted();
+                        } else {
+                            subscriber.onError(new Throwable("删除失败"));
+                        }
+                    }
+                }).subscribeOn(Schedulers.io())
+                        .flatMap(new Func1<Integer, Observable<Boolean>>() {
+                            @Override
+                            public Observable<Boolean> call(Integer integer) {
+                                return Observable.just(integer > 0);
+                            }
+                        })
+                        .subscribe(new Action1<Boolean>() {
+                            @Override
+                            public void call(Boolean succeed) {
+                                if (succeed) {
+                                    LogUtil.e(tag, "删除城市成功");
+                                }
+                            }
+                        }, new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                LogUtil.e(tag, throwable.getMessage());
+                            }
+                        });
+            }
+        }
     }
 
     //点击悬浮按钮

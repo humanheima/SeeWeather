@@ -31,10 +31,6 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.VH> {
     private Context context;
     private List<HeWeather> weatherList;
     private View rootView;
-    private View hourForecastView;//小时天气预报的item
-    private View dayForecastView;//每天天气预报的item
-    private HourlyVH hourlyVH;
-    private DailyVH dailyVH;
     //当日小时预报
     private List<HeWeather.HourlyForecastBean> hourlyForecastList;
     private TextView[] mClock;
@@ -57,20 +53,6 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.VH> {
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
         rootView = LayoutInflater.from(context).inflate(R.layout.item_weather, parent, false);
-       /* if (hourForecastView == null) {
-            hourForecastView = LayoutInflater.from(context).inflate(R.layout.item_hour_info_line, null);
-            hourlyVH = new HourlyVH(hourForecastView);
-            hourForecastView.setTag(hourlyVH);
-        } else {
-            hourlyVH = (HourlyVH) hourForecastView.getTag();
-        }
-        if (dayForecastView == null) {
-            dayForecastView = LayoutInflater.from(context).inflate(R.layout.item_forecast_line, parent, false);
-            dailyVH = new DailyVH(dayForecastView);
-            dayForecastView.setTag(dailyVH);
-        } else {
-            dailyVH = (DailyVH) dayForecastView.getTag();
-        }*/
         return new VH(rootView);
     }
 
@@ -78,6 +60,7 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.VH> {
     public void onBindViewHolder(VH holder, int position) {
         HeWeather weather = weatherList.get(position);
         //当前天气信息
+        holder.textCity.setText(weather.getBasic().getCity());
         holder.tempFlu.setText(String.format("%s℃", weather.getNow().getTmp()));
         holder.tempMax.setText(String.format("↑ %s °", weather.getDaily_forecast().get(0).getTmp().getMax()));
         holder.tempMin.setText(String.format("↓ %s °", weather.getDaily_forecast().get(0).getTmp().getMin()));
@@ -139,7 +122,8 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.VH> {
         for (int i = 0; i < dailyForecastList.size(); i++) {
             if (i > 1) {
                 try {
-                    forecastDate[i].setText(CommonUtil.dayForWeek(dailyForecastList.get(i).getDate()));
+                    //forecastDate[i].setText(CommonUtil.dayForWeek(dailyForecastList.get(i).getDate()));
+                    forecastDate[i].setText(dailyForecastList.get(i).getDate());
                 } catch (Exception e) {
                     LogUtil.e("bindDailyForecast", e.toString());
                 }
@@ -207,39 +191,4 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.VH> {
         }
     }
 
-    /**
-     * 每小时的天气预报item
-     */
-    static class HourlyVH {
-        @BindView(R.id.one_clock)
-        TextView oneClock;
-        @BindView(R.id.one_temp)
-        TextView oneTemp;
-        @BindView(R.id.one_humidity)
-        TextView oneHumidity;
-        @BindView(R.id.one_wind)
-        TextView oneWind;
-
-        HourlyVH(View view) {
-            ButterKnife.bind(this, view);
-        }
-    }
-
-    /**
-     * 未来每天的天气预报item
-     */
-    static class DailyVH {
-        @BindView(R.id.forecast_icon)
-        ImageView forecastIcon;
-        @BindView(R.id.forecast_date)
-        TextView forecastDate;
-        @BindView(R.id.forecast_temp)
-        TextView forecastTemp;
-        @BindView(R.id.forecast_txt)
-        TextView forecastTxt;
-
-        DailyVH(View view) {
-            ButterKnife.bind(this, view);
-        }
-    }
 }

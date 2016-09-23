@@ -83,9 +83,8 @@ public class NetWorkUtil {
     /**
      * 判断是否是wifi连接
      */
-    public static boolean isWifi(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean isWifi() {
+        ConnectivityManager cm = (ConnectivityManager) HMApp.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm == null)
             return false;
         return cm.getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_WIFI;
