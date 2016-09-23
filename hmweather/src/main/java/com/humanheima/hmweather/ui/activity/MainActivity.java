@@ -12,6 +12,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
@@ -22,6 +24,7 @@ import com.humanheima.hmweather.bean.WeatherCode;
 import com.humanheima.hmweather.network.NetWork;
 import com.humanheima.hmweather.ui.adapter.RvAdapter;
 import com.humanheima.hmweather.utils.GsonUtil;
+import com.humanheima.hmweather.utils.ListUtil;
 import com.humanheima.hmweather.utils.LogUtil;
 import com.humanheima.hmweather.utils.NetWorkUtil;
 import com.humanheima.hmweather.utils.RxBus;
@@ -39,6 +42,7 @@ import butterknife.OnClick;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -63,9 +67,12 @@ public class MainActivity extends BaseActivity
     private final static String tag = "MainActivity";
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
+    @BindView(R.id.rl_loading)
+    RelativeLayout rlLoading;
     private String FIRST_USE = "firstUse";
     private static String MINHANG = "CN101020200";//默认城市上海闵行
     private List<HeWeather> weatherList;
+    private List<HeWeather> updateWeatherList;
     private RvAdapter rvAdapter;
     private LinearLayoutManager layoutManager;
     LinearSnapHelper helper;
@@ -88,6 +95,7 @@ public class MainActivity extends BaseActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         weatherList = new ArrayList<>();
+        updateWeatherList = new ArrayList<>();
         if (!SPUtil.getInstance().getBoolean(FIRST_USE)) {
             //第一次使用，加载默认城市的天气预报，
             LogUtil.e(tag, "first use");
@@ -140,15 +148,23 @@ public class MainActivity extends BaseActivity
                 return null;
             }
         }).subscribeOn(Schedulers.io())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        rlLoading.setVisibility(View.VISIBLE);
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<HeWeather>>() {
                     @Override
                     public void onCompleted() {
+                        rlLoading.setVisibility(View.GONE);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         LogUtil.e(tag, e.getMessage());
+                        rlLoading.setVisibility(View.GONE);
                     }
 
                     @Override
@@ -199,7 +215,12 @@ public class MainActivity extends BaseActivity
                             }
                             return null;
                         }
-                    })
+                    }).doOnSubscribe(new Action0() {
+                @Override
+                public void call() {
+                    rlLoading.setVisibility(View.VISIBLE);
+                }
+            })
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<HeWeather>() {
                         @Override
@@ -207,11 +228,12 @@ public class MainActivity extends BaseActivity
                             if (!SPUtil.getInstance().getBoolean(FIRST_USE)) {
                                 SPUtil.getInstance().putBoolan(FIRST_USE, true);
                             }
+                            rlLoading.setVisibility(View.GONE);
                         }
 
                         @Override
                         public void onError(Throwable e) {
-
+                            rlLoading.setVisibility(View.GONE);
                         }
 
                         @Override
@@ -238,8 +260,7 @@ public class MainActivity extends BaseActivity
             recyclerView.setAdapter(rvAdapter);
             helper.attachToRecyclerView(recyclerView);
         } else {
-            rvAdapter.notifyItemInserted(weatherList.size() - 1);
-            recyclerView.smoothScrollToPosition(weatherList.size() - 1);
+            rvAdapter.notifyDataSetChanged();
         }
     }
 
@@ -386,5 +407,59 @@ public class MainActivity extends BaseActivity
     //点击悬浮按钮
     @OnClick(R.id.fab)
     public void onFabClick() {
+        //加载
+        LogUtil.e(tag, "更新");
+        if (ListUtil.notEmpty(weatherList)) {
+            final List<Observable<WeatherBean>> weatherBeanList = new ArrayList<>();
+            for (HeWeather weather : weatherList) {
+                Observable<WeatherBean> obs = NetWork.getApi().getWeatherByPost(weather.getBasic().getId(), WeatherKey.key).subscribeOn(Schedulers.newThread());
+                weatherBeanList.add(obs);
+            }
+            Observable.mergeDelayError(weatherBeanList)
+                    .flatMap(new Func1<WeatherBean, Observable<HeWeather>>() {
+                        @Override
+                        public Observable<HeWeather> call(WeatherBean weatherBean) {
+                            if (weatherBean != null) {
+                                return Observable.just(weatherBean.getWeatherList().get(0));
+                            }
+                            return null;
+                        }
+                    })
+                    .doOnSubscribe(new Action0() {
+                        @Override
+                        public void call() {
+                            rlLoading.setVisibility(View.VISIBLE);
+                        }
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<HeWeather>() {
+                        @Override
+                        public void onCompleted() {
+                            if (ListUtil.notEmpty(updateWeatherList)) {
+                                weatherList.clear();
+                                weatherList.addAll(updateWeatherList);
+                                setRvAdapter();
+                                updateWeatherList.clear();
+                            }
+                            rlLoading.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            LogUtil.e(tag, e.getMessage());
+                            rlLoading.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onNext(HeWeather heWeather) {
+                            if (heWeather != null) {
+                                updateWeatherList.add(heWeather);
+                                //开启新线程保存到数据库中
+                                saveWeaInfo(heWeather);
+                            }
+                        }
+
+                    });
+        }
     }
 }

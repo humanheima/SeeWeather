@@ -58,6 +58,7 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.VH> {
 
     @Override
     public void onBindViewHolder(VH holder, int position) {
+        LogUtil.e("tag", "onBindViewHolder");
         HeWeather weather = weatherList.get(position);
         //当前天气信息
         holder.textCity.setText(weather.getBasic().getCity());
@@ -74,6 +75,7 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.VH> {
         mHumidity = new TextView[hourlyForecastList.size()];
         mWind = new TextView[hourlyForecastList.size()];
 
+        holder.llHourForecast.removeAllViews();
         for (int i = 0; i < hourlyForecastList.size(); i++) {
             View hourView = View.inflate(context, R.layout.item_hour_info_line, null);
             mClock[i] = (TextView) hourView.findViewById(R.id.one_clock);
@@ -107,7 +109,7 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.VH> {
         forecastTemp = new TextView[dailyForecastList.size()];
         forecastTxt = new TextView[dailyForecastList.size()];
         forecastIcon = new ImageView[dailyForecastList.size()];
-
+        holder.llDayForecast.removeAllViews();
         for (int i = 0; i < dailyForecastList.size(); i++) {
             View dayView = View.inflate(context, R.layout.item_forecast_line, null);
             forecastDate[i] = (TextView) dayView.findViewById(R.id.forecast_date);
