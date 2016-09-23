@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardViewFirst"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/cardview_margin"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            card_view:cardCornerRadius="3dp"
+            card_view:cardElevation="2dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="15dp">
+
+                <ImageView
+                    android:id="@+id/weather_icon"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:src="@mipmap/type_one_sunny" />
+
+                <LinearLayout
+                    android:id="@+id/linear_temp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+
+                        android:id="@+id/temp_flu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toLeftOf="@+id/temp_layout"
+                        android:textSize="50sp" />
+
+                    <LinearLayout
+                        android:id="@+id/temp_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/temp_max"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#BDBDBD"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/temp_min"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:textColor="#BDBDBD"
+                            android:textSize="18sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/text_city"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/weather_icon"
+                    android:layout_marginLeft="32dp"
+                    android:text="闵行"
+                    android:textColor="@color/colorAccent" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/linear_temp"
+                    android:layout_marginBottom="6dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_toRightOf="@+id/text_city"
+                    android:gravity="right">
+
+                    <TextView
+                        android:id="@+id/temp_pm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="12dp"
+                        android:textColor="#BDBDBD"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/temp_quality"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#BDBDBD"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardViewSecond"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/cardViewFirst"
+            android:layout_margin="@dimen/cardview_margin"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            card_view:cardCornerRadius="3dp"
+            card_view:cardElevation="2dp">
+
+            <LinearLayout
+                android:id="@+id/ll_hour_forecast"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardViewThird"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/cardViewSecond"
+            android:layout_margin="@dimen/cardview_margin"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            card_view:cardCornerRadius="3dp"
+            card_view:cardElevation="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="16dp"
+                android:paddingLeft="32dp"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/img_cloth"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/icon_cloth" />
+
+                    <TextView
+                        android:id="@+id/text_cloth_brief"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="64dp"
+                        android:layout_toRightOf="@+id/img_cloth"
+                        android:text="穿衣指数---" />
+
+                    <TextView
+                        android:id="@+id/text_cloth_detail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/text_cloth_brief"
+                        android:layout_marginLeft="64dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_toRightOf="@+id/img_cloth"
+                        android:text="hhhh"
+                        android:textColor="#969696"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp">
+
+                    <ImageView
+                        android:id="@+id/img_sport"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/icon_sport" />
+
+                    <TextView
+                        android:id="@+id/text_sport_brief"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="64dp"
+                        android:layout_toRightOf="@+id/img_sport"
+                        android:text="穿衣指数---" />
+
+                    <TextView
+                        android:id="@+id/text_sport_detail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/text_sport_brief"
+                        android:layout_marginLeft="64dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_toRightOf="@+id/img_sport"
+                        android:text="hhhh"
+                        android:textColor="#969696"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp">
+
+                    <ImageView
+                        android:id="@+id/img_travel"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/icon_travel" />
+
+                    <TextView
+                        android:id="@+id/text_travel_brief"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="64dp"
+                        android:layout_toRightOf="@+id/img_travel"
+                        android:text="穿衣指数---" />
+
+                    <TextView
+                        android:id="@+id/text_travel_detail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/text_travel_brief"
+                        android:layout_marginLeft="64dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_toRightOf="@+id/img_travel"
+                        android:text="hhhh"
+                        android:textColor="#969696"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp">
+
+                    <ImageView
+                        android:id="@+id/img_flu"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/icon_flu" />
+
+                    <TextView
+                        android:id="@+id/text_flu_brief"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="64dp"
+                        android:layout_toRightOf="@+id/img_flu"
+                        android:text="穿衣指数---" />
+
+                    <TextView
+                        android:id="@+id/text_flu_detail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/text_flu_brief"
+                        android:layout_marginLeft="64dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_toRightOf="@+id/img_flu"
+                        android:text="hhhh"
+                        android:textColor="#969696"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardViewForth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/cardViewThird"
+            android:layout_margin="@dimen/cardview_margin"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            card_view:cardCornerRadius="3dp"
+            card_view:cardElevation="2dp">
+
+            <LinearLayout
+                android:id="@+id/ll_day_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+        </android.support.v7.widget.CardView>
+    </RelativeLayout>
+</android.support.v4.widget.NestedScrollView>

@@ -2,7 +2,6 @@ package com.humanheima.hmweather;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Environment;
 
 import com.humanheima.hmweather.utils.LogUtil;
@@ -14,6 +13,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by dmw on 2016/9/9.
@@ -29,8 +32,7 @@ public class HMApp extends Application {
     public static final String DB_FILE = DB_PATH + "/" + DB_NAME; //数据库文件
 
     private static final String COPIED = "copied";//标志数据库文件是否已经拷贝
-    private static final String INITIALIZED = "initialized";//标识天气图标是否已经初始化
-
+    private static final String ICON_INITIALIZED = "initialized";//标识天气图标是否已经初始化
     @Override
     public void onCreate() {
         super.onCreate();
@@ -38,41 +40,54 @@ public class HMApp extends Application {
         //初始化litepal数据库
         LitePalApplication.initialize(context);
         //把数据库文件拷贝到本地
-        copyDataBase(DB_FILE);
-        initWeatherIcon();
+        if (!SPUtil.getInstance().getBoolean(COPIED)) {
+            LogUtil.e("COPIED","COPIED");
+            copyDataBase(DB_FILE);
+        }
+        //初始化图片
+        if (!SPUtil.getInstance().getBoolean(ICON_INITIALIZED)) {
+            initWeatherIcon();
+        }
     }
-
 
     public static Context getAppContext() {
         return context;
     }
 
-
     /**
      * 拷贝数据库文件
      */
     public static void copyDataBase(final String dbFile) {
-        new AsyncTask<Void, Void, Boolean>() {
+        Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
-            protected Boolean doInBackground(Void... params) {
+            public void call(Subscriber<? super Boolean> subscriber) {
                 LogUtil.e("database", "doInBackground");
                 copyDB(dbFile);
                 if (new File(dbFile).exists()) {
-                    return true;
+                    subscriber.onNext(true);
+                    subscriber.onCompleted();
                 } else {
-                    return false;
+                    subscriber.onError(new Throwable("拷贝数据库文件失败"));
                 }
+            }
+        }).subscribe(new Subscriber<Boolean>() {
+            @Override
+            public void onCompleted() {
+                SPUtil.getInstance().putBoolan(COPIED, true);
             }
 
             @Override
-            protected void onPostExecute(Boolean successful) {
-                if (successful) {
-                    LogUtil.e("database", "exists");
+            public void onError(Throwable e) {
+                SPUtil.getInstance().putBoolan(COPIED, false);
+            }
+
+            @Override
+            public void onNext(Boolean succeed) {
+                if (succeed) {
+                    LogUtil.e("database", "拷贝成功");
                 }
             }
-        }.execute();
-
-
+        });
     }
 
     private static void copyDB(String dbFile) {
@@ -119,19 +134,28 @@ public class HMApp extends Application {
      * 初始化天气图标
      */
     private void initWeatherIcon() {
-        SPUtil.getInstance().putInt("未知", R.mipmap.none);
-        SPUtil.getInstance().putInt("晴", R.mipmap.type_one_sunny);
-        SPUtil.getInstance().putInt("阴", R.mipmap.type_one_cloudy);
-        SPUtil.getInstance().putInt("多云", R.mipmap.type_one_cloudy);
-        SPUtil.getInstance().putInt("少云", R.mipmap.type_one_cloudy);
-        SPUtil.getInstance().putInt("晴间多云", R.mipmap.type_one_cloudytosunny);
-        SPUtil.getInstance().putInt("小雨", R.mipmap.type_one_light_rain);
-        SPUtil.getInstance().putInt("中雨", R.mipmap.type_one_light_rain);
-        SPUtil.getInstance().putInt("大雨", R.mipmap.type_one_heavy_rain);
-        SPUtil.getInstance().putInt("阵雨", R.mipmap.type_one_thunderstorm);
-        SPUtil.getInstance().putInt("雷阵雨", R.mipmap.type_one_thunder_rain);
-        SPUtil.getInstance().putInt("霾", R.mipmap.type_one_fog);
-        SPUtil.getInstance().putInt("雾", R.mipmap.type_one_fog);
+        Observable.create(new Observable.OnSubscribe<Object>() {
+            @Override
+            public void call(Subscriber<? super Object> subscriber) {
+                SPUtil.getInstance().putInt("未知", R.mipmap.none);
+                SPUtil.getInstance().putInt("晴", R.mipmap.type_one_sunny);
+                SPUtil.getInstance().putInt("阴", R.mipmap.type_one_cloudy);
+                SPUtil.getInstance().putInt("多云", R.mipmap.type_one_cloudy);
+                SPUtil.getInstance().putInt("少云", R.mipmap.type_one_cloudy);
+                SPUtil.getInstance().putInt("晴间多云", R.mipmap.type_one_cloudytosunny);
+                SPUtil.getInstance().putInt("小雨", R.mipmap.type_one_light_rain);
+                SPUtil.getInstance().putInt("中雨", R.mipmap.type_one_light_rain);
+                SPUtil.getInstance().putInt("大雨", R.mipmap.type_one_heavy_rain);
+                SPUtil.getInstance().putInt("阵雨", R.mipmap.type_one_thunderstorm);
+                SPUtil.getInstance().putInt("雷阵雨", R.mipmap.type_one_thunder_rain);
+                SPUtil.getInstance().putInt("霾", R.mipmap.type_one_fog);
+                SPUtil.getInstance().putInt("雾", R.mipmap.type_one_fog);
+                SPUtil.getInstance().putBoolan(ICON_INITIALIZED, true);
+            }
+        }).subscribeOn(Schedulers.io())
+                .subscribe();
+
+
     }
 }
 

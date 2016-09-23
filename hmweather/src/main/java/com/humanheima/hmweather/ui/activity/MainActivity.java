@@ -5,8 +5,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -19,6 +20,7 @@ import com.humanheima.hmweather.bean.LocalWeather;
 import com.humanheima.hmweather.bean.WeatherBean;
 import com.humanheima.hmweather.bean.WeatherCode;
 import com.humanheima.hmweather.network.NetWork;
+import com.humanheima.hmweather.ui.adapter.RvAdapter;
 import com.humanheima.hmweather.utils.GsonUtil;
 import com.humanheima.hmweather.utils.LogUtil;
 import com.humanheima.hmweather.utils.RxBus;
@@ -57,11 +59,12 @@ public class MainActivity extends BaseActivity
     private final static String tag = "MainActivity";
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
-    @BindView(R.id.swipeRefresh)
-    SwipeRefreshLayout swipeRefresh;
     private String FIRST_USE = "firstUse";
     private static String MINHANG = "CN101020200";//默认城市上海闵行
     private List<HeWeather> weatherList;
+    private RvAdapter rvAdapter;
+    private LinearLayoutManager layoutManager;
+    LinearSnapHelper helper;
 
     @Override
     protected int bindLayout() {
@@ -83,19 +86,30 @@ public class MainActivity extends BaseActivity
         weatherList = new ArrayList<>();
         if (!SPUtil.getInstance().getBoolean(FIRST_USE)) {
             //第一次使用，加载默认城市的天气预报，
+            LogUtil.e(tag,"first use");
             addCityWeather(new WeatherCode(MINHANG));
         } else {
             //从多个数据源获取数据
-            getWeatherFromDBorNet();
+            getWeatherFromDB();
         }
-        getLocalWeaId();
 
     }
 
+
+    @Override
+    protected void bindEvent() {
+        RxBus.getInstance().toObservable(WeatherCode.class).subscribe(new Action1<WeatherCode>() {
+            @Override
+            public void call(WeatherCode weatherCode) {
+                //添加一个城市的天气fragment
+                addCityWeather(weatherCode);
+            }
+        });
+    }
     /**
      * 从数据库获取天气信息
      */
-    private void getWeatherFromDBorNet() {
+    private void getWeatherFromDB() {
         Observable.create(new Observable.OnSubscribe<List<LocalWeather>>() {
             @Override
             public void call(Subscriber<? super List<LocalWeather>> subscriber) {
@@ -124,74 +138,21 @@ public class MainActivity extends BaseActivity
                 .subscribe(new Subscriber<List<HeWeather>>() {
                     @Override
                     public void onCompleted() {
-                        //adapter.notifyDatasetChanged();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        LogUtil.e(tag,e.getMessage());
+                        LogUtil.e(tag, e.getMessage());
                     }
 
                     @Override
                     public void onNext(List<HeWeather> heWeathers) {
-                        if (heWeathers!=null&&heWeathers.size()>0){
+                        if (heWeathers != null && heWeathers.size() > 0) {
                             weatherList.addAll(heWeathers);
+                            setRvAdapter();
                         }
                     }
                 });
-    }
-
-    /**
-     * 加载本地天气
-     *
-     * @param code
-     */
-    private void loadDBWeather(final String code) {
-
-        Observable.create(new Observable.OnSubscribe<LocalWeather>() {
-            @Override
-            public void call(Subscriber<? super LocalWeather> subscriber) {
-                LocalWeather localWeather = DataSupport.where("weaid=?", code).findFirst(LocalWeather.class);
-                if (localWeather != null) {
-                    subscriber.onNext(localWeather);
-                } else {
-                    subscriber.onError(new Throwable("查找本地天气失败"));
-                }
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .map(new Func1<LocalWeather, HeWeather>() {
-                    @Override
-                    public HeWeather call(LocalWeather localWeather) {
-                        HeWeather heWeather = GsonUtil.fromJson(localWeather.getWeaInfo(), HeWeather.class);
-                        return heWeather;
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<HeWeather>() {
-                    @Override
-                    public void call(HeWeather weather) {
-                        heWeather = weather;
-                        setAdapter();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        LogUtil.e(tag, throwable.getMessage());
-                    }
-                });
-    }
-
-    @Override
-    protected void bindEvent() {
-        RxBus.getInstance().toObservable(WeatherCode.class).subscribe(new Action1<WeatherCode>() {
-            @Override
-            public void call(WeatherCode weatherCode) {
-                //添加一个城市的天气fragment
-                addCityWeather(weatherCode);
-            }
-        });
     }
 
     /**
@@ -278,7 +239,39 @@ public class MainActivity extends BaseActivity
      * @param weatherCode
      */
     private void addCityWeather(final WeatherCode weatherCode) {
-        Observable.create(new Observable.OnSubscribe<Boolean>() {
+        NetWork.getApi().getWeatherByPost(weatherCode.getCode(), WeatherKey.key)
+                .flatMap(new Func1<WeatherBean, Observable<HeWeather>>() {
+                    @Override
+                    public Observable<HeWeather> call(WeatherBean weatherBean) {
+                        if (weatherBean != null) {
+                            return Observable.just(weatherBean.getWeatherList().get(0));
+                        }
+                        return null;
+                    }
+                }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<HeWeather>() {
+                    @Override
+                    public void onCompleted() {
+                        SPUtil.getInstance().putBoolan(FIRST_USE,true);
+                        setRvAdapter();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(HeWeather heWeather) {
+                        if (heWeather != null) {
+                            weatherList.add(heWeather);
+                            //开启新线程保存到数据库中
+                            saveWeaInfo(heWeather);
+                        }
+                    }
+                });
+     /*   Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
                 //先查询如果表中没有则存,否则直接返回true
@@ -329,7 +322,20 @@ public class MainActivity extends BaseActivity
                             saveWeaInfo(heWeather);
                         }
                     }
-                });
+                });*/
+    }
+
+    private void setRvAdapter() {
+        if (rvAdapter == null) {
+            rvAdapter = new RvAdapter(this, weatherList);
+            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+            helper = new LinearSnapHelper();
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(rvAdapter);
+            helper.attachToRecyclerView(recyclerView);
+        } else {
+            rvAdapter.notifyDataSetChanged();
+        }
     }
 
     /**

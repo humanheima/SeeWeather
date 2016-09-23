@@ -4,23 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     tools:context="com.humanheima.materialdesign.ScrollingActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:layout_collapseMode="pin"
         android:background="@color/colorPrimary"
+        app:layout_collapseMode="pin"
         app:popupTheme="@style/AppTheme.PopupOverlay" />
-
+o
     <android.support.v4.widget.NestedScrollView
-        android:layout_below="@+id/toolbar"
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <TextView
             android:id="@+id/text_view"
@@ -29,5 +28,6 @@
             android:layout_margin="@dimen/text_margin"
             android:text="@string/large_text" />
     </android.support.v4.widget.NestedScrollView>
+
 
 </RelativeLayout>
