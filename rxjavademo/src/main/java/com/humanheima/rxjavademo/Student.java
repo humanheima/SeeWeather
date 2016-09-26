@@ -26,16 +26,4 @@ class Student {
         this.name = name;
     }
 
-    static class Course {
-
-        private String lesson;
-
-        public Course(String lesson) {
-            this.lesson = lesson;
-        }
-
-        public String getLesson() {
-            return lesson;
-        }
-    }
 }

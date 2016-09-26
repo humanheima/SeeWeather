@@ -13,6 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NetWork {
 
     private static API api;
+    private static VersionApi versionApi;
     private static OkHttpClient okHttpClient;
     private static final String BASE_URL = "https://api.heweather.com/x3/";
 
@@ -37,4 +38,25 @@ public class NetWork {
         }
         return api;
     }
+
+   /* public static VersionApi getVersionApi() {
+        if (versionApi == null) {
+            synchronized (NetWork.class) {
+                okHttpClient = new OkHttpClient.Builder()
+                        .retryOnConnectionFailure(true)
+                        .readTimeout(200, TimeUnit.SECONDS)
+                        .writeTimeout(300, TimeUnit.SECONDS)
+                        .connectTimeout(30, TimeUnit.SECONDS)
+                        .build();
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .client(okHttpClient)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                        .build();
+                versionApi = retrofit.create(VersionApi.class);
+            }
+        }
+        return versionApi;
+    }*/
 }

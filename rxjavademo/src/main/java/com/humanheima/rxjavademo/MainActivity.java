@@ -369,8 +369,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNext(Student student) {
-                List<Student.Course> courseList = student.getCourseList();
-                for (Student.Course course : courseList) {
+                List<Course> courseList = student.getCourseList();
+                for (Course course : courseList) {
                     Log.e(tag, course.getLesson());
                 }
             }
@@ -386,7 +386,7 @@ public class MainActivity extends AppCompatActivity {
          *这个时候，就需要用 flatMap() 了：
          */
 
-        Subscriber<Student.Course> subscriber2 = new Subscriber<Student.Course>() {
+        Subscriber<Course> subscriber2 = new Subscriber<Course>() {
             @Override
             public void onCompleted() {
 
@@ -398,15 +398,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNext(Student.Course course) {
+            public void onNext(Course course) {
                 Log.e(tag, course.getLesson());
             }
         };
 
         Observable.from(students)
-                .flatMap(new Func1<Student, Observable<Student.Course>>() {
+                .flatMap(new Func1<Student, Observable<Course>>() {
                     @Override
-                    public Observable<Student.Course> call(Student student) {
+                    public Observable<Course> call(Student student) {
                         return Observable.from(student.getCourseList());
                     }
                 }).subscribe(subscriber2);
@@ -426,9 +426,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void useFlatMap(View view) {
         List<Student> students = new ArrayList<>();
-        Student.Course course = new Student.Course("语文");
-        Student.Course course1 = new Student.Course("数学");
-        List<Student.Course> list = new ArrayList<>();
+        Course course = new Course("语文");
+        Course course1 = new Course("数学");
+        List<Course> list = new ArrayList<>();
         list.add(course);
         list.add(course1);
         Student stu1 = new Student();
@@ -440,7 +440,7 @@ public class MainActivity extends AppCompatActivity {
         students.add(stu1);
         students.add(stu2);
 
-        Subscriber<Student.Course> subscriber = new Subscriber<Student.Course>() {
+        Subscriber<Course> subscriber = new Subscriber<Course>() {
             @Override
             public void onCompleted() {
 
@@ -452,15 +452,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNext(Student.Course course) {
+            public void onNext(Course course) {
                 Log.e(tag, course.getLesson());
             }
         };
 
         Observable.from(students)
-                .flatMap(new Func1<Student, Observable<Student.Course>>() {
+                .flatMap(new Func1<Student, Observable<Course>>() {
                     @Override
-                    public Observable<Student.Course> call(Student student) {
+                    public Observable<Course> call(Student student) {
                         return Observable.from(student.getCourseList());
                     }
                 }).subscribe(subscriber);
@@ -686,7 +686,7 @@ public class MainActivity extends AppCompatActivity {
                     public void call(Long aLong) {
                         Log.e(tag, "timer" + aLong);
                     }
-                });*/
+                });
         /**
          * interval操作符是每隔一段时间就产生一个数字，这些数字从0开始，一次递增1直至无穷大
          */

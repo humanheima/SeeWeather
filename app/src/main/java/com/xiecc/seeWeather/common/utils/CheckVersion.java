@@ -43,7 +43,7 @@ public class CheckVersion {
                     }
                 }
             });
-    }
+}
 
     public static void showUpdateDialog(VersionAPI versionAPI, final Context context) {
         String title = "发现新版" + versionAPI.name + "版本号：" + versionAPI.versionShort;

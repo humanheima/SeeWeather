@@ -341,6 +341,12 @@ public class MainActivity extends BaseActivity
             startActivity(intent);
         } else if (id == R.id.nav_delete_city) {
             deleteCity();
+        } else if (id == R.id.nav_set) {
+
+        } else if (id == R.id.nav_about) {
+
+            Intent intent = new Intent(MainActivity.this, AboutActivity.class);
+            startActivity(intent);
         }
        /* if (id == R.id.nav_camera) {
             // Handle the camera action
