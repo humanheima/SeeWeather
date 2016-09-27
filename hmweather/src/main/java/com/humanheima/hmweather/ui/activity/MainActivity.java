@@ -17,11 +17,13 @@ import android.widget.RelativeLayout;
 
 import com.humanheima.hmweather.R;
 import com.humanheima.hmweather.base.BaseActivity;
+import com.humanheima.hmweather.base.SimpleSubscriber;
 import com.humanheima.hmweather.bean.HeWeather;
 import com.humanheima.hmweather.bean.LocalWeather;
 import com.humanheima.hmweather.bean.WeatherBean;
 import com.humanheima.hmweather.bean.WeatherCode;
 import com.humanheima.hmweather.network.NetWork;
+import com.humanheima.hmweather.service.AutoUpdateService;
 import com.humanheima.hmweather.ui.adapter.RvAdapter;
 import com.humanheima.hmweather.utils.GsonUtil;
 import com.humanheima.hmweather.utils.ListUtil;
@@ -46,8 +48,6 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-
-import static org.litepal.crud.DataSupport.deleteAll;
 
 /**
  * Created by dmw on 2016/9/9.
@@ -114,10 +114,11 @@ public class MainActivity extends BaseActivity
             @Override
             public void call(WeatherCode weatherCode) {
                 //添加一个城市的天气fragment
-
                 addCityWeather(weatherCode);
             }
         });
+        LogUtil.e(tag, "开启自动更新服务");
+        startService(new Intent(this, AutoUpdateService.class));
     }
 
     /**
@@ -276,24 +277,18 @@ public class MainActivity extends BaseActivity
         Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
-                deleteAll(LocalWeather.class, "weaid=?", heWeather.getBasic().getId());
-                if (localWeather.save()) {
+                int count = localWeather.updateAll("weaid=?", heWeather.getBasic().getId());
+                if (count > 0) {
                     subscriber.onNext(true);
                 } else {
                     subscriber.onError(new Throwable("存储天气信息失败"));
                 }
             }
         }).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Boolean>() {
+                .subscribe(new SimpleSubscriber<Boolean>() {
                     @Override
-                    public void call(Boolean succeed) {
+                    public void onNext(Boolean aBoolean) {
                         LogUtil.e(tag, "存储天气信息成功");
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        LogUtil.e(tag, throwable.getMessage());
                     }
                 });
     }
@@ -465,5 +460,12 @@ public class MainActivity extends BaseActivity
 
                     });
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopService(new Intent(this, AutoUpdateService.class));
+        super.onDestroy();
+
     }
 }

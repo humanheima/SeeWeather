@@ -37,15 +37,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.activity.MainActivity" />
         </activity>
+        <activity
+            android:name=".ui.activity.SetActivity"
+            android:theme="@style/AppTheme"></activity>
 
+        <!--自动更新的服务-->
         <service
             android:name=".service.AutoUpdateService"
             android:enabled="true"
             android:exported="false" />
-
-        <activity
-            android:name=".ui.activity.SetActivity"
-            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
