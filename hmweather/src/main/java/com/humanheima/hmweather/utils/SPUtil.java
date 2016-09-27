@@ -14,7 +14,9 @@ public class SPUtil {
     private static SPUtil spUtil;
     private static SharedPreferences hmSpref;
     private final static String SP_NAME = "hmSpref";
+    public static final String AUTO_UPDATE = "change_update_time";
     private static SharedPreferences.Editor editor;
+
     private SPUtil() {
         hmSpref = HMApp.getAppContext().getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
         editor = hmSpref.edit();
@@ -49,4 +51,16 @@ public class SPUtil {
         return hmSpref.getBoolean(key, false);
     }
 
+    /**
+     * 默认更新的时间是3小时
+     *
+     * @return
+     */
+    public int getAutoUpdate() {
+        return hmSpref.getInt(AUTO_UPDATE, 3);
+    }
+
+    public void putAutoUpdate(int time) {
+        editor.putInt(AUTO_UPDATE, time).apply();
+    }
 }

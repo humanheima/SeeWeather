@@ -1,32 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <!--由于CollapsingToolbarLayout 的 特点，应用的标题文字在收缩和展开状态是会自动过渡的。如果你想要在展开状态改变标题文字的位置，
-        你可以这样做：通过应用的 margin 的4个属性，
-        就是：app:expandedTitleMargin, app:expandedTitleMarginBottom, app:expandedTitleMarginEnd 以及 app:expandedTitleMarginStart
-        或者如果你想要在折叠和展开状态时改变文本的显示。你可以这样来简单的实现：
-        设置 TextAppearance，分别通过 app:collapsedTitleTextAppearance 和 app:expandedTitleTextAppearance 来设置。-->
+    android:layout_height="match_parent"
+    tools:context="com.humanheima.themetest.Main2Activity">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="256dp">
+        android:layout_height="256dp"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            app:collapsedTitleGravity="left"
             app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleGravity="center_horizontal"
-            app:expandedTitleMarginTop="210dp"
-            app:expandedTitleTextAppearance="@style/textToolbarTitle"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            app:title="@string/app_name">
-            <!-- contentScrim 这个属性是设置折叠后Toolbar的颜色-->
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            <!--app:statusBarScrim="@android:color/transparent"-->
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -44,7 +36,6 @@
 
                 <TextView
                     android:id="@+id/tv_version"
-                    style="@style/textToolbarContent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
@@ -57,16 +48,22 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin" />
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            <!-- app:popupTheme="@style/AppTheme.PopupOverlay.Light"-->
         </android.support.design.widget.CollapsingToolbarLayout>
+
+
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <include layout="@layout/content_main2" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@android:drawable/ic_dialog_email" />
 
-        <include layout="@layout/part_about" />
-
-    </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>
