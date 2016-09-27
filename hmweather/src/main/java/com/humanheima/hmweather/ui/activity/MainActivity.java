@@ -321,12 +321,10 @@ public class MainActivity extends BaseActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -342,9 +340,9 @@ public class MainActivity extends BaseActivity
         } else if (id == R.id.nav_delete_city) {
             deleteCity();
         } else if (id == R.id.nav_set) {
-
+            Intent intent = new Intent(MainActivity.this, SetActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_about) {
-
             Intent intent = new Intent(MainActivity.this, AboutActivity.class);
             startActivity(intent);
         }

@@ -12,13 +12,13 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="256dp">
+        android:layout_height="256dp"
+        app:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
             app:collapsedTitleGravity="left"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleGravity="center_horizontal"
@@ -29,8 +29,7 @@
             <!-- contentScrim 这个属性是设置折叠后Toolbar的颜色-->
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fitsSystemWindows="true">
+                android:layout_height="match_parent">
 
                 <ImageView
                     android:id="@+id/bannner"
@@ -57,7 +56,9 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin" />
+                app:layout_collapseMode="pin"
+                android:layout_marginTop="16dp"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
