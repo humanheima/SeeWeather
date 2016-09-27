@@ -1,18 +1,22 @@
 package com.humanheima.hmweather.ui.activity;
 
-import android.graphics.Color;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.humanheima.hmweather.R;
+import com.humanheima.hmweather.base.BaseActivity;
+import com.humanheima.hmweather.ui.fragment.SetFragment;
 
-public class SetActivity extends AppCompatActivity {
-    Toolbar toolbar;
+import butterknife.BindView;
 
-    @Override
+public class SetActivity extends BaseActivity {
+    @BindView(R.id.tool_bar)
+    Toolbar toolBar;
+    @BindView(R.id.rl_content)
+    RelativeLayout rlContent;
+    private SetFragment setFragment;
+   /* @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reset);
@@ -25,7 +29,29 @@ public class SetActivity extends AppCompatActivity {
             decorView.setSystemUiVisibility(option);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
-       /* ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();*/
+    }*/
+
+    @Override
+    protected int bindLayout() {
+        return R.layout.activity_reset;
+    }
+
+    @Override
+    protected void initData() {
+        setSupportActionBar(toolBar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        setFragment = new SetFragment();
+        // Display the fragment as the main content.
+        getFragmentManager().beginTransaction()
+                .replace(R.id.rl_content, setFragment)
+                .commit();
+    }
+
+    @Override
+    protected void bindEvent() {
+
     }
 }

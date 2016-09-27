@@ -25,6 +25,7 @@ import com.humanheima.hmweather.bean.WeatherCode;
 import com.humanheima.hmweather.network.NetWork;
 import com.humanheima.hmweather.service.AutoUpdateService;
 import com.humanheima.hmweather.ui.adapter.RvAdapter;
+import com.humanheima.hmweather.utils.DoubleClickExit;
 import com.humanheima.hmweather.utils.GsonUtil;
 import com.humanheima.hmweather.utils.ListUtil;
 import com.humanheima.hmweather.utils.LogUtil;
@@ -299,7 +300,11 @@ public class MainActivity extends BaseActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (DoubleClickExit.check()) {
+                super.onBackPressed();
+            } else {
+                T.showToast(this, "再按一次退出");
+            }
         }
     }
 
@@ -461,6 +466,7 @@ public class MainActivity extends BaseActivity
                     });
         }
     }
+
 
     @Override
     protected void onDestroy() {

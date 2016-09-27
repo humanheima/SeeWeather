@@ -14,7 +14,8 @@ public class SPUtil {
     private static SPUtil spUtil;
     private static SharedPreferences hmSpref;
     private final static String SP_NAME = "hmSpref";
-    public static final String AUTO_UPDATE = "change_update_time";
+    public static final String CLEAR_CACHE = "clear_cache";//清空缓存
+    public static final String AUTO_UPDATE = "change_update_time"; //自动更新时长
     private static SharedPreferences.Editor editor;
 
     private SPUtil() {
