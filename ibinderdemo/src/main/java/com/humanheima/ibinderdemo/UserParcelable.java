@@ -3,6 +3,8 @@ package com.humanheima.ibinderdemo;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.humanheima.ibinderdemo.aidl.Book;
+
 /**
  * Created by Administrator on 2016/9/20.
  */

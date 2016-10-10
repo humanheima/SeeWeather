@@ -278,8 +278,8 @@ public class MainActivity extends BaseActivity
         Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
-                int count = localWeather.updateAll("weaid=?", heWeather.getBasic().getId());
-                if (count > 0) {
+                DataSupport.deleteAll(LocalWeather.class, "weaid=?", heWeather.getBasic().getId());
+                if (localWeather.save()) {
                     subscriber.onNext(true);
                 } else {
                     subscriber.onError(new Throwable("存储天气信息失败"));
