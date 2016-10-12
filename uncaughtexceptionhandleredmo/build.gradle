@@ -5,7 +5,7 @@ android {
     buildToolsVersion "24.0.2"
 
     defaultConfig {
-        applicationId "com.humanheima.statebartintdemo"
+        applicationId "com.humanheima.uncaughtexceptionhandleredmo"
         minSdkVersion 19
         targetSdkVersion 24
         versionCode 1
@@ -28,7 +28,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:design:24.2.0'
     testCompile 'junit:junit:4.12'
     //butterknife
     apt 'com.jakewharton:butterknife-compiler:8.4.0'

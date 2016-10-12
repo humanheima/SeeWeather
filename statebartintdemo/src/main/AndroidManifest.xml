@@ -9,29 +9,11 @@
         android:supportsRtl="true">
         <activity
             android:name=".MainActivity"
-            android:theme="@style/TranslucentTheme">
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
-        </activity>
+            android:theme="@style/TranslucentTheme"></activity>
         <activity
             android:name=".Main2Activity"
             android:label="@string/title_activity_main2"
-            android:theme="@style/TranslucentTheme">
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
-        </activity>
+            android:theme="@style/TranslucentTheme"></activity>
         <activity
             android:name=".Main3Activity"
             android:theme="@style/TranslucentTheme">
@@ -46,22 +28,30 @@
         </activity>
         <activity
             android:name=".Main4Activity"
+            android:theme="@style/TranslucentTheme"></activity>
+        <activity
+            android:name=".Main5Activity"
             android:theme="@style/TranslucentTheme">
+
+            <!--
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+
+                 <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
+            -->
+        </activity>
+        <activity
+            android:name=".HomeActivity"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Main5Activity"
-            android:theme="@style/TranslucentTheme">
-            <!-- <intent-filter>
-                 <action android:name="android.intent.action.MAIN" />
-
-                 <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>-->
-        </activity>
+        <activity android:name=".Main6Activity"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
