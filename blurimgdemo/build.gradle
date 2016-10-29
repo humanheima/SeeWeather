@@ -12,7 +12,7 @@ android {
         versionName "1.0"
 //      以下是高斯模糊相关的API
         renderscriptTargetApi 19
-        renderscriptSupportModeEnabled  true
+        renderscriptSupportModeEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -31,6 +31,8 @@ dependencies {
     })
     //picasso
     compile 'com.squareup.picasso:picasso:2.5.2'
+    //圆形ImageView
+    compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.android.support:appcompat-v7:24.2.0'
     testCompile 'junit:junit:4.12'
 }

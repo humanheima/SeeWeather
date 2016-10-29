@@ -15,15 +15,14 @@ public class BlurBitmap {
     /**
      * 最大模糊度(在0.0到25.0之间)
      */
-    //private static final float BLUR_RADIUS = 25f;
-    private static final float BLUR_RADIUS = 20f;
+    private static final float BLUR_RADIUS = 7f;
 
     /**
      * 模糊图片的具体方法
      *
-     * @param context   上下文对象
-     * @param image     需要模糊的图片
-     * @return          模糊处理后的图片
+     * @param context 上下文对象
+     * @param image   需要模糊的图片
+     * @return 模糊处理后的图片
      */
     public static Bitmap blur(Context context, Bitmap image) {
         // 计算图片缩小后的长宽
@@ -51,7 +50,6 @@ public class BlurBitmap {
         blurScript.setInput(tmpIn);
         // 将输出数据保存到输出内存中
         blurScript.forEach(tmpOut);
-
         // 将数据填充到Allocation中
         tmpOut.copyTo(outputBitmap);
 
