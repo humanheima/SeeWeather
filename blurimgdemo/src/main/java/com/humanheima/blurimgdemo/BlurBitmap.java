@@ -7,6 +7,9 @@ import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
 import android.support.v8.renderscript.ScriptIntrinsicBlur;
 
+/**
+ *
+ */
 public class BlurBitmap {
     /**
      * 图片缩放比例
@@ -15,7 +18,7 @@ public class BlurBitmap {
     /**
      * 最大模糊度(在0.0到25.0之间)
      */
-    private static final float BLUR_RADIUS = 7f;
+    private static final float BLUR_RADIUS = 25f;
 
     /**
      * 模糊图片的具体方法

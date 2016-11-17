@@ -160,11 +160,14 @@ public class MainActivity extends AppCompatActivity {
         MainActivity.this.sendBroadcast(mediaScanIntent);
     }
 
+    /**
+     * 创建一个不重复的文件名
+     * @return
+     * @throws IOException
+     */
     private File createImageFile() throws IOException {
-        // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        //File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         if (!storageDir.exists()) {
             storageDir.mkdirs();

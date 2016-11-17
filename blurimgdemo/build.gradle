@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'android-apt'
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
@@ -11,8 +11,8 @@ android {
         versionCode 1
         versionName "1.0"
 //      以下是高斯模糊相关的API
-        renderscriptTargetApi 19
-        renderscriptSupportModeEnabled true
+        /*  renderscriptTargetApi 19
+          renderscriptSupportModeEnabled true*/
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -25,7 +25,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -35,4 +35,8 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.android.support:appcompat-v7:24.2.0'
     testCompile 'junit:junit:4.12'
+    compile files('libs/renderscript-v8.jar')
+    //butterknife
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile 'com.jakewharton:butterknife:8.4.0'
 }

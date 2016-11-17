@@ -567,13 +567,22 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(subscriber);
     }
 
+    /**
+     * doOnSubscribe执行的线程不是subscriber执行所在的线程
+     * 默认情况下， doOnSubscribe() 执行在 subscribe() 发生的线程；而如果在 doOnSubscribe() 之后有 subscribeOn() 的话，
+     * 它将执行在离它最近的 subscribeOn() 所指定的线程。
+     * 下面的的代码如果运行注释的代码会发现progressBar不能显示，因为subscribe()所发生的线程是一个new Thread 不是主线程
+     *
+     * @param view
+     */
     public void useDoOnSubscribe(View view) {
         Observable.just(1, 2, 3, 4)
                 .subscribeOn(Schedulers.io())
                 .doOnSubscribe(new Action0() {
                     @Override
                     public void call() {
-                        progressBar.setVisibility(View.GONE);//需要在主线程执行
+                        progressBar.setVisibility(View.VISIBLE);//需要在主线程执行
+                        Log.e(tag, "doOnSubscribe ,thread id" + Thread.currentThread().getId() + ",thread name" + Thread.currentThread().getName());
                     }
                 })
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -586,16 +595,46 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Log.e(tag, e.getMessage());
                     }
 
                     @Override
                     public void onNext(Integer integer) {
-                        Log.e(tag, "onNext" + integer);
+                        Log.e(tag, "onNext" + integer + ",thread id" + Thread.currentThread().getId() + ",thread name" + Thread.currentThread().getName());
                     }
                 });
-    }
+       /* new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Observable.just(1, 2, 3, 4)
+                        .subscribeOn(Schedulers.io())
+                        .doOnSubscribe(new Action0() {
+                            @Override
+                            public void call() {
+                                progressBar.setVisibility(View.VISIBLE);//需要在主线程执行
+                                Log.e(tag, "doOnSubscribe ,thread id" + Thread.currentThread().getId() + ",thread name" + Thread.currentThread().getName());
+                            }
+                        })
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<Integer>() {
+                            @Override
+                            public void onCompleted() {
 
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e(tag, e.getMessage());
+                            }
+
+                            @Override
+                            public void onNext(Integer integer) {
+                                Log.e(tag, "onNext" + integer + ",thread id" + Thread.currentThread().getId() + ",thread name" + Thread.currentThread().getName());
+                            }
+                        });
+            }
+        }).start();*/
+    }
 
     /**
      * defer 操作符，just操作符是在创建Observable就进行了赋值操作，而defer是在订阅者订阅时才创建Observable，此时才进行真正的赋值操作
