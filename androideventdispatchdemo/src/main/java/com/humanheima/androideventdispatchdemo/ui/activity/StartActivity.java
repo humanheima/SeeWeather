@@ -36,7 +36,7 @@ public class StartActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_start_MainActivity)
     public void startMainActivity() {
-        startActivity(new Intent(StartActivity.this, MainActivity.class));
+        startActivity(new Intent(StartActivity.this, ViewDispatchActivity.class));
     }
 
     @OnClick(R.id.btn_start_MyLayoutActivity)

@@ -8,17 +8,31 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activity.MainActivity" />
+        <activity android:name=".ui.activity.ViewDispatchActivity" />
         <activity android:name=".ui.activity.MyButtonActivity" />
         <activity android:name=".ui.activity.StartActivity">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
+        <activity android:name=".ui.activity.OutInterceptActivity" />
+        <activity android:name=".ui.activity.InnerInterceptActivity" />
+        <!-- 下面是任玉刚demo的Activity -->
+        <activity android:name=".ui.rygdemo.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.OutInterceptActivity" />
-        <activity android:name=".ui.activity.InnerInterceptActivity"></activity>
+        <activity android:name=".ui.rygdemo.DemoActivity_1"></activity>
+        <activity android:name=".ui.rygdemo.DemoActivity_2"></activity>
+        <activity android:name=".ui.rygdemo.TestActivity"></activity>
     </application>
 
 </manifest>
