@@ -9,7 +9,7 @@
         <attr name="normalColor" format="color" />
         <attr name="buttonColor" format="color" />
         <attr name="buttonPadding" format="dimension" />
-        <attr name="switchRate" format="integer" />
+        <attr name="isChecked" format="boolean" />
     </declare-styleable>
 
 </resources>
